@@ -15,7 +15,7 @@ export default function Footer() {
         position: 'absolute',
         top: 0, left: 0, right: 0,
         height: '2px',
-        background: 'linear-gradient(90deg, #3B82F6, #06B6D4, #06B6D4, #06B6D4, #3B82F6)',
+        background: 'linear-gradient(90deg, #D4AF37, #B8860B, #B8860B, #B8860B, #D4AF37)',
         backgroundSize: '200% 100%',
         animation: 'gradient-shift 3s linear infinite'
       }} />
@@ -25,7 +25,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <Plane size={20} color="#3B82F6" />
+              <Plane size={20} color="#D4AF37" />
               <span style={{ fontWeight: 800, fontSize: '1.1rem' }} className="gradient-text">SkyWay Airlines</span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.7 }}>

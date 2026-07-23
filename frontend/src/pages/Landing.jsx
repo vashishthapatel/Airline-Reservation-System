@@ -231,7 +231,7 @@ export default function Landing() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2rem' }}>
             <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-              <div style={{ background: 'rgba(59, 130, 246, 0.1)', color: 'var(--primary-light)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary-light)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <Zap size={28} />
               </div>
               <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem' }}>⚡ Instant Booking</h3>
@@ -251,7 +251,7 @@ export default function Landing() {
             </div>
 
             <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-              <div style={{ background: 'rgba(6, 182, 212, 0.14)', color: 'var(--accent)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <div style={{ background: 'rgba(184, 134, 11, 0.14)', color: 'var(--accent)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <Globe size={28} />
               </div>
               <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem' }}>✈️ 200+ Destinations</h3>

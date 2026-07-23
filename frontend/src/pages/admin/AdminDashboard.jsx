@@ -94,28 +94,28 @@ export default function AdminDashboard() {
             title="Total Flights"
             value={stats?.totalFlights}
             subtitle={`${stats?.activeFlights} Active Flights`}
-            color="#3B82F6"
+            color="#D4AF37"
           />
           <StatsCard
             icon={<Calendar size={20} />}
             title="Total Bookings"
             value={stats?.totalBookings}
             subtitle={`${stats?.todayBookings} Bookings Today`}
-            color="#06B6D4"
+            color="#B8860B"
           />
           <StatsCard
             icon={<Users size={20} />}
             title="Customers"
             value={stats?.totalCustomers}
             subtitle="Registered Users"
-            color="#3B82F6"
+            color="#D4AF37"
           />
           <StatsCard
             icon={<DollarSign size={20} />}
             title="Total Revenue"
             value={formatPrice(stats?.totalRevenue)}
             subtitle={`Today: ${formatPrice(stats?.todayRevenue)}`}
-            color="#06B6D4"
+            color="#B8860B"
           />
         </div>
 
@@ -129,15 +129,15 @@ export default function AdminDashboard() {
                 <AreaChart data={revenueData}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.08)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(212, 175, 55, 0.08)" />
                   <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} />
                   <YAxis stroke="var(--text-muted)" fontSize={11} />
-                  <Tooltip contentStyle={{ background: '#111827', border: '1px solid var(--glass-border)', color: '#F8FAFC' }} />
-                  <Area type="monotone" dataKey="Revenue" stroke="#3B82F6" fillOpacity={1} fill="url(#colorRev)" />
+                  <Tooltip contentStyle={{ background: '#232323', border: '1px solid var(--glass-border)', color: '#F5F5F5' }} />
+                  <Area type="monotone" dataKey="Revenue" stroke="#D4AF37" fillOpacity={1} fill="url(#colorRev)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -149,11 +149,11 @@ export default function AdminDashboard() {
             <div style={{ width: '100%', height: '240px' }}>
               <ResponsiveContainer>
                 <BarChart data={bookingTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.08)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(212, 175, 55, 0.08)" />
                   <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} />
                   <YAxis stroke="var(--text-muted)" fontSize={11} />
-                  <Tooltip contentStyle={{ background: '#111827', border: '1px solid var(--glass-border)', color: '#F8FAFC' }} />
-                  <Bar dataKey="Bookings" fill="#06B6D4" radius={[4, 4, 0, 0]} />
+                  <Tooltip contentStyle={{ background: '#232323', border: '1px solid var(--glass-border)', color: '#F5F5F5' }} />
+                  <Bar dataKey="Bookings" fill="#B8860B" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
