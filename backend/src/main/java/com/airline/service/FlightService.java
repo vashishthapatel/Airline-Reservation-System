@@ -254,6 +254,7 @@ public class FlightService {
         response.setAvailableSeats(flight.getAvailableSeats());
         response.setStatus(flight.getStatus().name());
         response.setAircraftModel(flight.getAircraft().getModel());
+        response.setManufacturer(flight.getAircraft().getManufacturer());
         response.setDurationMinutes(durationMinutes);
         return response;
     }

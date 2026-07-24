@@ -25,6 +25,7 @@ public class FlightResponse {
     private Integer availableSeats;
     private String status;
     private String aircraftModel;
+    private String manufacturer;
     private long durationMinutes;
     private String direction;
     private boolean cheapest;

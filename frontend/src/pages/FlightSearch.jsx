@@ -195,11 +195,9 @@ export default function FlightSearch() {
         </form>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
-        {/* Main Search Layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', alignItems: 'start' }}>
-          {/* Filters Sidebar */}
-          <div className="glass-card" style={{ padding: '1.5rem', position: 'sticky', top: '90px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '2rem', alignItems: 'start' }}>
+        {/* Filters Sidebar */}
+        <div className="glass-card" style={{ padding: '1.5rem', position: 'sticky', top: '90px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>
               <SlidersHorizontal size={18} style={{ color: 'var(--primary-light)' }} />
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Filter & Sort</h3>
@@ -311,7 +309,6 @@ export default function FlightSearch() {
               </>
             ) : null}
           </div>
-        </div>
       </div>
     </motion.div>
   )
