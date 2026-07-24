@@ -5,6 +5,7 @@ services:
     branch: main
     rootDir: backend
     dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
     envVars:
       - key: JWT_SECRET
         generateValue: true
