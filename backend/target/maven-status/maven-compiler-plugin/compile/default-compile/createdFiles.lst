@@ -2,6 +2,7 @@ com\airline\dto\AuthResponse.class
 com\airline\entity\BookingStatus.class
 com\airline\dto\SeatResponse.class
 com\airline\service\AuthService.class
+com\airline\controller\HealthController.class
 com\airline\controller\AirportController.class
 com\airline\dto\CreateAircraftRequest.class
 com\airline\entity\Booking.class
