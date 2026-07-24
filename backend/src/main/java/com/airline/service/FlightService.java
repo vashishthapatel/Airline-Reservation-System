@@ -38,17 +38,25 @@ public class FlightService {
         Airport destination = airportRepository.findByIataCode(destinationCode.toUpperCase())
                 .orElseThrow(() -> new ResourceNotFoundException("Destination airport not found: " + destinationCode));
 
-        LocalDate departureDate = LocalDate.parse(departureDateStr);
-        LocalDateTime startOfDay = departureDate.atStartOfDay();
-        LocalDateTime endOfDay = departureDate.atTime(LocalTime.MAX);
+        List<Flight> forwardFlights;
+        List<Flight> reverseFlights;
 
-        List<Flight> forwardFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
-                origin, destination, startOfDay, endOfDay
-        );
+        if (departureDateStr == null || departureDateStr.trim().isEmpty()) {
+            forwardFlights = flightRepository.findByOriginAirportAndDestinationAirport(origin, destination);
+            reverseFlights = flightRepository.findByOriginAirportAndDestinationAirport(destination, origin);
+        } else {
+            LocalDate departureDate = LocalDate.parse(departureDateStr);
+            LocalDateTime startOfDay = departureDate.atStartOfDay();
+            LocalDateTime endOfDay = departureDate.atTime(LocalTime.MAX);
 
-        List<Flight> reverseFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
-                destination, origin, startOfDay, endOfDay
-        );
+            forwardFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
+                    origin, destination, startOfDay, endOfDay
+            );
+
+            reverseFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
+                    destination, origin, startOfDay, endOfDay
+            );
+        }
 
         List<FlightResponse> allResponses = new ArrayList<>();
 

@@ -22,6 +22,8 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
             LocalDateTime endOfDay
     );
 
+    List<Flight> findByOriginAirportAndDestinationAirport(Airport origin, Airport destination);
+
     @Query("SELECT COUNT(f) FROM Flight f WHERE f.status = 'SCHEDULED' OR f.status = 'DELAYED'")
     Long countActiveFlights();
 

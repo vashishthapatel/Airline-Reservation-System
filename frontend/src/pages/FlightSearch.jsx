@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { searchFlights, getAirports, getAllFlights } from '../api/axios'
+import { searchFlights, getAirports } from '../api/axios'
 import FlightCard from '../components/FlightCard'
 import LoadingSpinner from '../components/LoadingSpinner'
-import { SlidersHorizontal, ArrowUpDown, RefreshCw, AlertCircle, Plane } from 'lucide-react'
+import { SlidersHorizontal, ArrowUpDown, RefreshCw, Plane, Calendar } from 'lucide-react'
+import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
 export default function FlightSearch() {
@@ -17,7 +18,6 @@ export default function FlightSearch() {
   const tripType = searchParams.get('tripType') || 'one-way'
 
   const [flights, setFlights] = useState([])
-  const [allFlights, setAllFlights] = useState([])
   const [airports, setAirports] = useState([])
   const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState('price') // price, duration, departure
@@ -46,31 +46,24 @@ export default function FlightSearch() {
 
   useEffect(() => {
     async function fetchResults() {
-      if (!originCode || !destinationCode || !departureDate) return
+      if (!originCode || !destinationCode) return
       setLoading(true)
       try {
-        const res = await searchFlights({
+        const params = {
           originCode,
           destinationCode,
-          departureDate,
           passengers
-        })
+        }
+        if (departureDate) {
+          params.departureDate = departureDate
+        }
+        const res = await searchFlights(params)
         if (res.data && res.data.success) {
           setFlights(res.data.data)
         }
 
-        const allRes = await getAllFlights()
-        if (allRes.data && allRes.data.success) {
-          setAllFlights(allRes.data.data)
-        }
-
-        // Find max price for slider
-        const combined = [
-          ...(res.data?.data || []),
-          ...(allRes.data?.data || []).filter(f => f.destinationCode === destinationCode)
-        ]
-        if (combined.length > 0) {
-          const prices = combined.map(f => Number(f.basePrice))
+        if (res.data && res.data.data && res.data.data.length > 0) {
+          const prices = res.data.data.map(f => Number(f.basePrice))
           const max = Math.max(...prices)
           setMaxPrice(max)
           setPriceFilter(max)
@@ -87,8 +80,8 @@ export default function FlightSearch() {
 
   const handleReSearch = (e) => {
     e.preventDefault()
-    if (!tempOrigin || !tempDest || !tempDate) {
-      toast.error('All fields are required!')
+    if (!tempOrigin || !tempDest) {
+      toast.error('Origin and Destination are required!')
       return
     }
     if (tempOrigin === tempDest) {
@@ -98,7 +91,7 @@ export default function FlightSearch() {
     setSearchParams({
       originCode: tempOrigin,
       destinationCode: tempDest,
-      departureDate: tempDate,
+      departureDate: tempDate || '',
       passengers: tempPass.toString(),
       tripType
     })
@@ -124,18 +117,18 @@ export default function FlightSearch() {
   const forwardFlights = sortedFlights.filter(f => f.direction === 'FORWARD' || !f.direction)
   const reverseFlights = sortedFlights.filter(f => f.direction === 'REVERSE')
 
-  const filteredOtherFlights = allFlights.filter(f => 
-    f.destinationCode === destinationCode && 
-    !flights.some(sf => sf.id === f.id) &&
-    Number(f.basePrice) <= priceFilter
-  )
+  const groupFlightsByDate = (flightList) => {
+    const groups = {}
+    flightList.forEach(flight => {
+      const dateKey = format(new Date(flight.departureTime), 'yyyy-MM-dd')
+      if (!groups[dateKey]) groups[dateKey] = []
+      groups[dateKey].push(flight)
+    })
+    return Object.entries(groups).sort(([a], [b]) => new Date(a) - new Date(b))
+  }
 
-  const sortedOtherFlights = [...filteredOtherFlights].sort((a, b) => {
-    if (sortBy === 'price') return Number(a.basePrice) - Number(b.basePrice)
-    if (sortBy === 'duration') return a.durationMinutes - b.durationMinutes
-    if (sortBy === 'departure') return new Date(a.departureTime) - new Date(b.departureTime)
-    return 0
-  })
+  const forwardGroups = groupFlightsByDate(forwardFlights)
+  const reverseGroups = groupFlightsByDate(reverseFlights)
 
   return (
     <div className="page-container section-padding animate-fadeInUp">
@@ -225,29 +218,40 @@ export default function FlightSearch() {
               <LoadingSpinner />
             ) : sortedFlights.length > 0 ? (
               <>
-                {forwardFlights.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-                        {originCode} → {destinationCode}
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500, marginLeft: '0.5rem' }}>
-                          ({forwardFlights.length} flight{forwardFlights.length !== 1 ? 's' : ''} found)
-                        </span>
-                      </h2>
-                    </div>
-                    {forwardFlights.map(flight => (
-                      <FlightCard
-                        key={flight.id}
-                        flight={flight}
-                        onSelect={handleSelectFlight}
-                      />
+                {forwardGroups.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                      {originCode} → {destinationCode}
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500, marginLeft: '0.5rem' }}>
+                        ({forwardFlights.length} flight{forwardFlights.length !== 1 ? 's' : ''} found)
+                      </span>
+                    </h2>
+                    {forwardGroups.map(([date, dateFlights]) => (
+                      <div key={date} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--glass-border)' }}>
+                          <Calendar size={16} style={{ color: 'var(--primary-light)' }} />
+                          <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                            {format(new Date(date), 'EEE, MMM d, yyyy')}
+                          </span>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
+                            ({dateFlights.length} flight{dateFlights.length !== 1 ? 's' : ''})
+                          </span>
+                        </div>
+                        {dateFlights.map(flight => (
+                          <FlightCard
+                            key={flight.id}
+                            flight={flight}
+                            onSelect={handleSelectFlight}
+                          />
+                        ))}
+                      </div>
                     ))}
                   </div>
                 )}
 
-                {reverseFlights.length > 0 && (
-                  <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>
+                {reverseGroups.length > 0 && (
+                  <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--glass-border)' }}>
                       <Plane size={18} style={{ color: 'var(--primary-light)', transform: 'scaleX(-1)' }} />
                       <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
                         {destinationCode} → {originCode}
@@ -256,48 +260,30 @@ export default function FlightSearch() {
                         </span>
                       </h2>
                     </div>
-                    {reverseFlights.map(flight => (
-                      <FlightCard
-                        key={flight.id}
-                        flight={flight}
-                        onSelect={handleSelectFlight}
-                      />
+                    {reverseGroups.map(([date, dateFlights]) => (
+                      <div key={date} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--glass-border)' }}>
+                          <Calendar size={16} style={{ color: 'var(--primary-light)' }} />
+                          <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                            {format(new Date(date), 'EEE, MMM d, yyyy')}
+                          </span>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
+                            ({dateFlights.length} flight{dateFlights.length !== 1 ? 's' : ''})
+                          </span>
+                        </div>
+                        {dateFlights.map(flight => (
+                          <FlightCard
+                            key={flight.id}
+                            flight={flight}
+                            onSelect={handleSelectFlight}
+                          />
+                        ))}
+                      </div>
                     ))}
                   </div>
                 )}
               </>
             ) : null}
-
-            {/* All Flights to Destination */}
-            {!loading && (
-              <div style={{ marginTop: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>
-                  <Plane size={18} style={{ color: 'var(--primary-light)' }} />
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-                    All Flights to {destinationCode}
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500, marginLeft: '0.5rem' }}>
-                      ({sortedOtherFlights.length} flight{sortedOtherFlights.length !== 1 ? 's' : ''} found)
-                    </span>
-                  </h2>
-                </div>
-
-                {sortedOtherFlights.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    {sortedOtherFlights.map(flight => (
-                      <FlightCard
-                        key={flight.id}
-                        flight={flight}
-                        onSelect={handleSelectFlight}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="glass-card" style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    No other flights to this destination are currently scheduled.
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>

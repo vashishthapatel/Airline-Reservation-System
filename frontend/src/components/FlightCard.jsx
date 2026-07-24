@@ -70,9 +70,6 @@ export default function FlightCard({ flight, onSelect }) {
             {flight.availableSeats} seats left
           </span>
           <span className="badge badge-info">Economy from {formatPrice(flight.basePrice)}</span>
-          {flight.direction === 'REVERSE' && (
-            <span className="badge badge-warning">Return Route</span>
-          )}
           {flight.cheapest && (
             <span className="badge badge-success">Cheapest</span>
           )}

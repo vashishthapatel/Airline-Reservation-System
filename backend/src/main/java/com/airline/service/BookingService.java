@@ -170,23 +170,22 @@ public class BookingService {
                 .collect(Collectors.toList());
 
         Flight flight = booking.getFlight();
-        com.airline.dto.FlightResponse flightResponse = new com.airline.dto.FlightResponse(
-                flight.getId(),
-                flight.getFlightNumber(),
-                flight.getOriginAirport().getName(),
-                flight.getDestinationAirport().getName(),
-                flight.getOriginAirport().getIataCode(),
-                flight.getDestinationAirport().getIataCode(),
-                flight.getOriginAirport().getCity(),
-                flight.getDestinationAirport().getCity(),
-                flight.getDepartureTime(),
-                flight.getArrivalTime(),
-                flight.getBasePrice(),
-                flight.getAvailableSeats(),
-                flight.getStatus().name(),
-                flight.getAircraft().getModel(),
-                java.time.Duration.between(flight.getDepartureTime(), flight.getArrivalTime()).toMinutes()
-        );
+        com.airline.dto.FlightResponse flightResponse = new com.airline.dto.FlightResponse();
+        flightResponse.setId(flight.getId());
+        flightResponse.setFlightNumber(flight.getFlightNumber());
+        flightResponse.setOrigin(flight.getOriginAirport().getName());
+        flightResponse.setDestination(flight.getDestinationAirport().getName());
+        flightResponse.setOriginCode(flight.getOriginAirport().getIataCode());
+        flightResponse.setDestinationCode(flight.getDestinationAirport().getIataCode());
+        flightResponse.setOriginCity(flight.getOriginAirport().getCity());
+        flightResponse.setDestinationCity(flight.getDestinationAirport().getCity());
+        flightResponse.setDepartureTime(flight.getDepartureTime());
+        flightResponse.setArrivalTime(flight.getArrivalTime());
+        flightResponse.setBasePrice(flight.getBasePrice());
+        flightResponse.setAvailableSeats(flight.getAvailableSeats());
+        flightResponse.setStatus(flight.getStatus().name());
+        flightResponse.setAircraftModel(flight.getAircraft().getModel());
+        flightResponse.setDurationMinutes(java.time.Duration.between(flight.getDepartureTime(), flight.getArrivalTime()).toMinutes());
 
         return new BookingResponse(
                 booking.getId(),
