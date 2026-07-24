@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { searchFlights, getAirports } from '../api/axios'
 import FlightCard from '../components/FlightCard'
@@ -6,6 +7,26 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import { SlidersHorizontal, ArrowUpDown, RefreshCw, Plane, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
+  }
+}
 
 export default function FlightSearch() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -131,7 +152,12 @@ export default function FlightSearch() {
   const reverseGroups = groupFlightsByDate(reverseFlights)
 
   return (
-    <div className="page-container section-padding animate-fadeInUp">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="page-container section-padding animate-fadeInUp"
+    >
       {/* Re-Search Panel */}
       <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
         <form onSubmit={handleReSearch} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', alignItems: 'end' }}>
@@ -287,6 +313,6 @@ export default function FlightSearch() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

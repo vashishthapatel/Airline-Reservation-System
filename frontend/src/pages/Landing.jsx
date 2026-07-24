@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Plane, Calendar, Users, ArrowRight, ShieldCheck, Zap, Globe, MapPin, TrendingUp, Clock, Star, BarChart3 } from 'lucide-react'
 import { getAirports } from '../api/axios'
@@ -66,7 +67,7 @@ export default function Landing() {
   const stats = [
     { icon: Plane, label: 'Active Flights', value: '126+', color: '#D4AF37' },
     { icon: Globe, label: 'Destinations', value: '12+', color: '#4CC9F0' },
-    { icon: Users, label: 'Happy Travelers', value: '50K+', color: '#10B981' },
+    { icon: Users, label: 'Happy Travelers', value: '50K+', color: '#22C55E' },
     { icon: ShieldCheck, label: 'Safe Booking', value: '100%', color: '#f59e0b' }
   ]
 
@@ -79,8 +80,32 @@ export default function Landing() {
     window.scrollTo({ top: 600, behavior: 'smooth' })
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
+    }
+  }
+
   return (
-    <div className="animate-fadeInUp">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Hero Section */}
       <header className="hero-section">
         <div className="hero-bg-orbs">
@@ -92,7 +117,7 @@ export default function Landing() {
         <div className="hero-content">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', alignItems: 'center' }}>
             {/* Hero Left Text */}
-            <div className="hero-text">
+            <motion.div variants={itemVariants} className="hero-text">
               <span className="hero-badge">
                 <Plane size={14} /> Fly high with SkyWay
               </span>
@@ -107,28 +132,37 @@ export default function Landing() {
               {/* Stats Row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
                 {stats.map((stat, idx) => (
-                  <div key={idx} className="glass-card" style={{ padding: '1.25rem', textAlign: 'center' }}>
+                  <motion.div
+                    key={idx}
+                    variants={itemVariants}
+                    className="glass-card"
+                    style={{ padding: '1.25rem', textAlign: 'center' }}
+                  >
                     <div style={{ background: `${stat.color}15`, color: stat.color, width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
                       <stat.icon size={20} />
                     </div>
                     <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{stat.value}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontWeight: 500 }}>{stat.label}</div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <motion.div variants={itemVariants} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <a href="#search-section" className="btn-primary">
                   Book Now <ArrowRight size={16} />
                 </a>
                 <a href="#routes" className="btn-ghost">
                   View Routes
                 </a>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Flight Search Card */}
-            <div id="search-section" className="search-card">
+            <motion.div
+              id="search-section"
+              variants={itemVariants}
+              className="search-card"
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
                 <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Plane size={24} />
@@ -237,11 +271,17 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1.5rem', padding: '1rem' }}>
+                <motion.button
+                  type="submit"
+                  className="btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', marginTop: '1.5rem', padding: '1rem' }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   <Plane size={18} /> Search Flights
-                </button>
+                </motion.button>
               </form>
-            </div>
+            </motion.div>
           </div>
         </div>
       </header>
@@ -249,46 +289,44 @@ export default function Landing() {
       {/* Features Section */}
       <section className="section-padding" style={{ background: 'var(--bg-secondary)', position: 'relative', zIndex: 1 }}>
         <div className="page-container">
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: '4rem' }}
+          >
             <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>Why Choose SkyWay?</h2>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
               We provide the best booking experience, flight schedules, and premium service to make your trip unforgettable.
             </p>
-          </div>
+          </motion.div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-            <div className="glass-card" style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--gradient-primary)' }}></div>
-              <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary-light)', width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                <Zap size={28} />
-              </div>
-              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>⚡ Instant Booking</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Get your digital ticket immediately after payment, with automatic seat updates.
-              </p>
-            </div>
-
-            <div className="glass-card" style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg, #10B981, #4CC9F0)' }}></div>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                <ShieldCheck size={28} />
-              </div>
-              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>🛡️ Secure Payments</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Multi-channel secure transactions. Rest assured your transaction details are fully protected.
-              </p>
-            </div>
-
-            <div className="glass-card" style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg, #4CC9F0, #D4AF37)' }}></div>
-              <div style={{ background: 'rgba(76, 201, 240, 0.1)', color: 'var(--accent)', width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                <Globe size={28} />
-              </div>
-              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>✈️ 200+ Destinations</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Fly anywhere around the world. Connect with all major international and domestic routes.
-              </p>
-            </div>
+            {[
+              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#D4AF37' },
+              { icon: ShieldCheck, title: '🛡️ Secure Payments', desc: 'Multi-channel secure transactions. Rest assured your transaction details are fully protected.', color: '#22C55E' },
+              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#4CC9F0' }
+            ].map((feature, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="glass-card"
+                style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
+              >
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: `linear-gradient(90deg, ${feature.color}, transparent)` }}></div>
+                <div style={{ background: `${feature.color}15`, color: feature.color, width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+                  <feature.icon size={28} />
+                </div>
+                <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>{feature.title}</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                  {feature.desc}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -296,51 +334,64 @@ export default function Landing() {
       {/* How it Works Section */}
       <section id="how-it-works" className="section-padding" style={{ position: 'relative', zIndex: 1 }}>
         <div className="page-container">
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: '4rem' }}
+          >
             <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>How It Works</h2>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
               Book your next flight in just 4 simple steps.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="steps-progress" style={{ marginBottom: '0' }}>
-            <div className="step-item active">
-              <span className="step-number">1</span>
-              <span className="step-label">Search Flights</span>
-            </div>
-            <div className="step-connector done"></div>
-            <div className="step-item active">
-              <span className="step-number">2</span>
-              <span className="step-label">Select Seats</span>
-            </div>
-            <div className="step-connector done"></div>
-            <div className="step-item active">
-              <span className="step-number">3</span>
-              <span className="step-label">Passenger Info</span>
-            </div>
-            <div className="step-connector done"></div>
-            <div className="step-item active">
-              <span className="step-number">4</span>
-              <span className="step-label">Secure Pay</span>
-            </div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="steps-progress"
+            style={{ marginBottom: '0' }}
+          >
+            {['Search Flights', 'Select Seats', 'Passenger Info', 'Secure Pay'].map((step, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="step-item active">
+                  <span className="step-number">{idx + 1}</span>
+                  <span className="step-label">{step}</span>
+                </div>
+                {idx < 3 && <div className="step-connector done"></div>}
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Popular Routes Section */}
       <section id="routes" className="section-padding" style={{ background: 'var(--bg-secondary)', position: 'relative', zIndex: 1 }}>
         <div className="page-container">
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: '4rem' }}
+          >
             <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>Popular Flight Routes</h2>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
               Discover deals on our most frequented flights. Click any card to set your route automatically.
             </p>
-          </div>
+          </motion.div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {popularRoutes.map((route, idx) => (
-              <div
+              <motion.div
                 key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
                 className="glass-card"
                 style={{ 
                   padding: '1.5rem', 
@@ -349,6 +400,7 @@ export default function Landing() {
                   overflow: 'hidden'
                 }}
                 onClick={() => selectPopularRoute(route)}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'var(--gradient-primary)' }}></div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -370,7 +422,7 @@ export default function Landing() {
                   </span>
                   <span style={{ fontWeight: 800, color: 'var(--primary-light)', fontSize: '1.1rem' }}>{route.price}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -391,6 +443,6 @@ export default function Landing() {
           </p>
         </div>
       </footer>
-    </div>
+    </motion.div>
   )
 }

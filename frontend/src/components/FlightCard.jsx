@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { Plane, Clock, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -16,7 +17,12 @@ export default function FlightCard({ flight, onSelect }) {
   const arr = new Date(flight.arrivalTime)
 
   return (
-    <div className="flight-card" onClick={() => onSelect && onSelect(flight)}>
+    <motion.div
+      className="flight-card"
+      onClick={() => onSelect && onSelect(flight)}
+      whileHover={{ y: -5, scale: 1.01 }}
+      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+    >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
         <div>
@@ -81,6 +87,6 @@ export default function FlightCard({ flight, onSelect }) {
           Select <ArrowRight size={14} />
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }
