@@ -24,7 +24,7 @@ export default function Navbar() {
       <div className="navbar-inner">
         {/* Logo */}
         <Link to="/" className="navbar-logo" onClick={closeMenu}>
-          <Plane size={24} style={{ color: '#D4AF37' }} />
+          <Plane size={24} style={{ color: '#D6C08D' }} />
           <span className="gradient-text">SkyWay Airlines</span>
         </Link>
 

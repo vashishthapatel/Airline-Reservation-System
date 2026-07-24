@@ -183,8 +183,8 @@ export default function BookingConfirmation() {
         <button className="btn-ghost" onClick={handlePrint}>
           <Printer size={16} /> Print / Download Ticket
         </button>
-        <Link to="/history" className="btn-primary">
-          <FileText size={16} /> View My Bookings <ArrowRight size={16} />
+        <Link to="/history" className="btn-primary" style={{ background: 'var(--gradient-primary)', border: 'none' }}>
+          <FileText size={16} /> Booking History <ArrowRight size={16} />
         </Link>
       </div>
     </div>

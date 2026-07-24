@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { searchFlights, getAirports } from '../api/axios'
-import FlightCard from '../components/FlightCard'
+import EnhancedFlightCard from '../components/EnhancedFlightCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { SlidersHorizontal, ArrowUpDown, RefreshCw, Plane, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
@@ -262,7 +262,7 @@ export default function FlightSearch() {
                           </span>
                         </div>
                         {dateFlights.map(flight => (
-                          <FlightCard
+                          <EnhancedFlightCard
                             key={flight.id}
                             flight={flight}
                             onSelect={handleSelectFlight}
@@ -296,7 +296,7 @@ export default function FlightSearch() {
                           </span>
                         </div>
                         {dateFlights.map(flight => (
-                          <FlightCard
+                          <EnhancedFlightCard
                             key={flight.id}
                             flight={flight}
                             onSelect={handleSelectFlight}

@@ -65,8 +65,8 @@ export default function Landing() {
   ]
 
   const stats = [
-    { icon: Plane, label: 'Active Flights', value: '126+', color: '#D4AF37' },
-    { icon: Globe, label: 'Destinations', value: '12+', color: '#4CC9F0' },
+    { icon: Plane, label: 'Active Flights', value: '126+', color: '#D6C08D' },
+    { icon: Globe, label: 'Destinations', value: '12+', color: '#3B82F6' },
     { icon: Users, label: 'Happy Travelers', value: '50K+', color: '#22C55E' },
     { icon: ShieldCheck, label: 'Safe Booking', value: '100%', color: '#f59e0b' }
   ]
@@ -107,7 +107,7 @@ export default function Landing() {
       variants={containerVariants}
     >
       {/* Hero Section */}
-      <header className="hero-section">
+      <header className="hero-section cinematic-hero">
         <div className="hero-bg-orbs">
           <div className="orb orb-1"></div>
           <div className="orb orb-2"></div>
@@ -135,7 +135,7 @@ export default function Landing() {
                   <motion.div
                     key={idx}
                     variants={itemVariants}
-                    className="glass-card"
+                className="destination-card"
                     style={{ padding: '1.25rem', textAlign: 'center' }}
                   >
                     <div style={{ background: `${stat.color}15`, color: stat.color, width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
@@ -164,7 +164,7 @@ export default function Landing() {
               className="search-card"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'rgba(214, 192, 141, 0.1)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Plane size={24} />
                 </div>
                 <div>
@@ -304,9 +304,9 @@ export default function Landing() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
             {[
-              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#D4AF37' },
+              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#D6C08D' },
               { icon: ShieldCheck, title: '🛡️ Secure Payments', desc: 'Multi-channel secure transactions. Rest assured your transaction details are fully protected.', color: '#22C55E' },
-              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#4CC9F0' }
+              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#3B82F6' }
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
@@ -428,11 +428,96 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="premium-section-alt">
+        <div className="page-container">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: '4rem' }}
+          >
+            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>What Travelers Say</h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
+              Real stories from real adventurers who chose SkyWay.
+            </p>
+          </motion.div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+            {[
+              { name: 'Ananya Sharma', role: 'Business Traveler', quote: 'SkyWay made my Delhi to London journey feel effortless. The seat selection and premium lounge access were exceptional.' },
+              { name: 'Rahul Mehta', role: 'Adventure Seeker', quote: 'Booked a last-minute ticket to Bali and the process was seamless. The app is incredibly intuitive.' },
+              { name: 'Priya Kapoor', role: 'Frequent Flyer', quote: 'The loyalty program rewards are genuine. I have upgraded multiple times without any hassle.' }
+            ].map((review, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="testimonial-card"
+              >
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  {[1,2,3,4,5].map(star => (
+                    <span key={star} style={{ color: 'var(--primary)', fontSize: '1rem' }}>★</span>
+                  ))}
+                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.7, marginBottom: '1.5rem', fontStyle: 'italic' }}>"{review.quote}"</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#0B0B0B' }}>
+                    {review.name[0]}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{review.name}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{review.role}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Loyalty Program */}
+      <section className="premium-section">
+        <div className="page-container">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="loyalty-card"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              <div style={{ background: 'rgba(214, 192, 141, 0.1)', color: 'var(--primary-light)', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <h2 className="gradient-text" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)' }}>SkyWay Privilege</h2>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '700px', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
+              Earn miles on every flight. Unlock complimentary upgrades, priority boarding, lounge access, and exclusive member-only fares.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
+              {[
+                { title: 'Miles', desc: 'Earn miles on every rupee spent with us and redeem for free flights.' },
+                { title: 'Upgrades', desc: 'Complimentary cabin upgrades when available for elite members.' },
+                { title: 'Priority', desc: 'Skip the queue with dedicated check-in and boarding lanes.' }
+              ].map((benefit, idx) => (
+                <div key={idx} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>{benefit.title}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>{benefit.desc}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--glass-border)', padding: '3rem 0', position: 'relative', zIndex: 1 }}>
         <div className="page-container" style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-            <Plane size={24} style={{ color: '#D4AF37' }} />
+            <Plane size={24} style={{ color: '#D6C08D' }} />
             <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>SkyWay Airlines</span>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>

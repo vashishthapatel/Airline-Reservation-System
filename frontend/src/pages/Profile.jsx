@@ -78,7 +78,7 @@ export default function Profile() {
         {/* Account Statistics */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: 'rgba(212, 175, 55, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-light)' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: 'rgba(214, 192, 141, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-light)' }}>
               <ClipboardList size={24} />
             </div>
             <div>

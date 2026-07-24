@@ -33,9 +33,9 @@ export default function App() {
           toastOptions={{
             duration: 4000,
             style: {
-              background: '#232323',
+              background: '#2D2D2D',
               color: '#F5F5F5',
-              border: '1px solid rgba(212, 175, 55, 0.15)'
+              border: '1px solid rgba(214, 192, 141, 0.15)'
             }
           }}
         />

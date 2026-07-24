@@ -1,4 +1,4 @@
-export default function StatsCard({ icon, title, value, subtitle, color = '#D4AF37', trend }) {
+export default function StatsCard({ icon, title, value, subtitle, color = '#D6C08D', trend }) {
   return (
     <div className="stats-card">
       <div className="stats-icon" style={{ background: `${color}20`, color }}>

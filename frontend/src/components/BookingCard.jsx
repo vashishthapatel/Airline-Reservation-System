@@ -38,7 +38,7 @@ export default function BookingCard({ booking, onCancel }) {
       </div>
 
       {booking.flight && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(212, 175, 55, 0.04)', borderRadius: '10px', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(214, 192, 141, 0.04)', borderRadius: '10px', marginBottom: '1rem', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Plane size={16} style={{ color: 'var(--primary-light)' }} />
             <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{booking.flight.flightNumber}</span>
@@ -60,7 +60,7 @@ export default function BookingCard({ booking, onCancel }) {
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Passengers</div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {booking.passengers.map((p, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '4px 10px', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '4px 10px', background: 'rgba(214, 192, 141, 0.1)', borderRadius: '20px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                 <Users size={12} style={{ color: 'var(--primary-light)' }} />
                 {p.fullName}
                 {p.seatNumber && p.seatNumber !== 'N/A' && <span style={{ color: 'var(--text-muted)' }}>· {p.seatNumber}</span>}
