@@ -2,7 +2,6 @@ services:
   - type: web
     name: airline-backend
     runtime: docker
-    plan: free
     branch: main
     rootDir: backend
     dockerfilePath: ./Dockerfile
@@ -34,7 +33,6 @@ services:
   - type: web
     name: airline-frontend
     runtime: static
-    plan: free
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
