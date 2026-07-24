@@ -63,7 +63,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         String frontendOrigin = System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:5173");
-        configuration.setAllowedOrigins(List.of(frontendOrigin, "http://localhost:5173", "http://localhost:3000"));
+        if (frontendOrigin == null || frontendOrigin.isBlank()) {
+            frontendOrigin = "http://localhost:5173";
+        }
+        configuration.setAllowedOrigins(List.of(frontendOrigin));
+        configuration.setAllowedOriginPatterns(List.of(
+                frontendOrigin,
+                "https://*.onrender.com",
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
