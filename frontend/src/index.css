@@ -500,22 +500,9 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background-image: url('/landing-hero.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   position: relative;
   overflow: hidden;
   padding-top: 80px;
-}
-
-.hero-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(11,11,11,0.75) 0%, rgba(11,11,11,0.55) 50%, rgba(11,11,11,0.8) 100%);
-  z-index: 0;
 }
 
 .hero-bg-orbs {
@@ -815,9 +802,14 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
 .cinematic-hero {
   background:
+    url('/landing-hero.jpg'),
     radial-gradient(ellipse at 20% 30%, rgba(214, 192, 141, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 70%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
     linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background-size: cover, auto, auto, auto;
+  background-position: center, 20% 30%, 80% 70%, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed, scroll, scroll, scroll;
   position: relative;
 }
 
@@ -825,9 +817,12 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
   content: '';
   position: absolute;
   inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D6C08D' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background:
+    linear-gradient(180deg, rgba(11,11,11,0.75) 0%, rgba(11,11,11,0.55) 50%, rgba(11,11,11,0.8) 100%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D6C08D' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   opacity: 0.5;
   pointer-events: none;
+  z-index: 0;
 }
 
 /* ============================================================ Seat Map ============================================================ */
