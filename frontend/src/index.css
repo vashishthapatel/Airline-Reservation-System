@@ -89,6 +89,16 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+@media screen and (max-width: 767px) {
+  .hero-content { padding: var(--space-12) var(--space-4) !important; }
 }
 
 body::before {
@@ -579,12 +589,13 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
 /* Search Form */
 .search-card {
-  background: rgba(23, 23, 23, 0.94);
-  backdrop-filter: blur(30px);
-  border: 1px solid rgba(59, 130, 246, 0.08);
+  background: rgba(23, 23, 23, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(214, 192, 141, 0.15);
   border-radius: 24px;
   padding: var(--space-8);
-  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.06);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25), 0 0 30px rgba(214, 192, 141, 0.05);
 }
 
 .search-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-6); }
@@ -802,12 +813,12 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
 .cinematic-hero {
   background:
-    url('/landing-hero.jpg'),
+    url('/airplane-bg.jpg'),
     radial-gradient(ellipse at 20% 30%, rgba(214, 192, 141, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 70%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
     linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
   background-size: cover, auto, auto, auto;
-  background-position: center, 20% 30%, 80% 70%, center;
+  background-position: center 95%, 20% 30%, 80% 70%, center;
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
   background-attachment: fixed, scroll, scroll, scroll;
   position: relative;
@@ -1218,7 +1229,14 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
   .hero-plane { display: none; }
 
+  .hero-content { padding: var(--space-16) var(--space-4); }
+  .hero-title { font-size: clamp(2rem, 8vw, 3rem); }
+  .hero-subtitle { font-size: 1rem; }
+
+  .hero-stats { grid-template-columns: 1fr !important; }
+
   .search-grid { grid-template-columns: 1fr; }
+  .search-card { padding: var(--space-6); }
 
   .admin-layout { flex-direction: column; }
   .admin-sidebar { display: none; }
@@ -1228,6 +1246,15 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
   .steps-progress { gap: var(--space-1); }
   .step-connector { width: 20px; }
+
+  .cinematic-hero {
+    background-attachment: scroll, scroll, scroll, scroll;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  .hero-content { padding: var(--space-16) var(--space-6); }
+  .hero-title { font-size: clamp(2.2rem, 5vw, 3.5rem); }
 }
 
 @media (min-width: 1024px) {

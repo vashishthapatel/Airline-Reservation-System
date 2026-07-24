@@ -130,7 +130,7 @@ export default function Landing() {
               </p>
               
               {/* Stats Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+              <div className="hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
                 {stats.map((stat, idx) => (
                   <motion.div
                     key={idx}
