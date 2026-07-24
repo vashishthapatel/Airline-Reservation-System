@@ -121,6 +121,9 @@ export default function FlightSearch() {
     return 0
   })
 
+  const forwardFlights = sortedFlights.filter(f => f.direction === 'FORWARD' || !f.direction)
+  const reverseFlights = sortedFlights.filter(f => f.direction === 'REVERSE')
+
   const filteredOtherFlights = allFlights.filter(f => 
     f.destinationCode === destinationCode && 
     !flights.some(sf => sf.id === f.id) &&
@@ -222,21 +225,46 @@ export default function FlightSearch() {
               <LoadingSpinner />
             ) : sortedFlights.length > 0 ? (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-                    Matching Search: {originCode} → {destinationCode}
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500, marginLeft: '0.5rem' }}>
-                      ({sortedFlights.length} flight{sortedFlights.length !== 1 ? 's' : ''} found)
-                    </span>
-                  </h2>
-                </div>
-                {sortedFlights.map(flight => (
-                  <FlightCard
-                    key={flight.id}
-                    flight={flight}
-                    onSelect={handleSelectFlight}
-                  />
-                ))}
+                {forwardFlights.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                        {originCode} → {destinationCode}
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500, marginLeft: '0.5rem' }}>
+                          ({forwardFlights.length} flight{forwardFlights.length !== 1 ? 's' : ''} found)
+                        </span>
+                      </h2>
+                    </div>
+                    {forwardFlights.map(flight => (
+                      <FlightCard
+                        key={flight.id}
+                        flight={flight}
+                        onSelect={handleSelectFlight}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {reverseFlights.length > 0 && (
+                  <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>
+                      <Plane size={18} style={{ color: 'var(--primary-light)', transform: 'scaleX(-1)' }} />
+                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                        {destinationCode} → {originCode}
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500, marginLeft: '0.5rem' }}>
+                          ({reverseFlights.length} flight{reverseFlights.length !== 1 ? 's' : ''} found)
+                        </span>
+                      </h2>
+                    </div>
+                    {reverseFlights.map(flight => (
+                      <FlightCard
+                        key={flight.id}
+                        flight={flight}
+                        onSelect={handleSelectFlight}
+                      />
+                    ))}
+                  </div>
+                )}
               </>
             ) : null}
 

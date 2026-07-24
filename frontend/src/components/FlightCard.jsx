@@ -65,11 +65,20 @@ export default function FlightCard({ flight, onSelect }) {
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <span className={`badge ${flight.availableSeats > 20 ? 'badge-success' : flight.availableSeats > 5 ? 'badge-warning' : 'badge-error'}`}>
             {flight.availableSeats} seats left
           </span>
           <span className="badge badge-info">Economy from {formatPrice(flight.basePrice)}</span>
+          {flight.direction === 'REVERSE' && (
+            <span className="badge badge-warning">Return Route</span>
+          )}
+          {flight.cheapest && (
+            <span className="badge badge-success">Cheapest</span>
+          )}
+          {flight.fastest && (
+            <span className="badge badge-info">Fastest</span>
+          )}
         </div>
         <button className="btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           Select <ArrowRight size={14} />

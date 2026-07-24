@@ -42,14 +42,52 @@ public class FlightService {
         LocalDateTime startOfDay = departureDate.atStartOfDay();
         LocalDateTime endOfDay = departureDate.atTime(LocalTime.MAX);
 
-        List<Flight> flights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
+        List<Flight> forwardFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
                 origin, destination, startOfDay, endOfDay
         );
 
-        return flights.stream()
-                .filter(f -> f.getAvailableSeats() >= passengers)
-                .map(this::toFlightResponse)
-                .collect(Collectors.toList());
+        List<Flight> reverseFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
+                destination, origin, startOfDay, endOfDay
+        );
+
+        List<FlightResponse> allResponses = new ArrayList<>();
+
+        for (Flight f : forwardFlights) {
+            if (f.getAvailableSeats() >= passengers) {
+                FlightResponse r = toFlightResponse(f);
+                r.setDirection("FORWARD");
+                allResponses.add(r);
+            }
+        }
+
+        for (Flight f : reverseFlights) {
+            if (f.getAvailableSeats() >= passengers) {
+                FlightResponse r = toFlightResponse(f);
+                r.setDirection("REVERSE");
+                allResponses.add(r);
+            }
+        }
+
+        if (allResponses.isEmpty()) {
+            return allResponses;
+        }
+
+        BigDecimal minPrice = allResponses.stream()
+                .map(FlightResponse::getBasePrice)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        long minDuration = allResponses.stream()
+                .mapToLong(FlightResponse::getDurationMinutes)
+                .min()
+                .orElse(0L);
+
+        for (FlightResponse r : allResponses) {
+            r.setCheapest(r.getBasePrice().compareTo(minPrice) == 0);
+            r.setFastest(r.getDurationMinutes() == minDuration);
+        }
+
+        return allResponses;
     }
 
     public List<FlightResponse> getAllFlights() {
