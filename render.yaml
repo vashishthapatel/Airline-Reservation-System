@@ -16,7 +16,7 @@ services:
       - key: DATABASE_USERNAME
         fromDatabase:
           name: airline-db
-          property: username
+          property: user
       - key: DATABASE_PASSWORD
         fromDatabase:
           name: airline-db
@@ -29,7 +29,7 @@ services:
         fromService:
           type: web
           name: airline-frontend
-          property: hostUrl
+          property: hostport
 
   - type: web
     name: airline-frontend
@@ -44,8 +44,8 @@ services:
         fromService:
           type: web
           name: airline-backend
-          property: hostUrl
-        appendPath: /api
+          property: hostport
+        prependPath: /api
 
 databases:
   - name: airline-db
