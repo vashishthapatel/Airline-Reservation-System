@@ -11,20 +11,20 @@
 :root {
   /* Colors */
   --bg-primary: #0B0B0B;
-  --bg-secondary: #181818;
+  --bg-secondary: #171717;
   --bg-card: #232323;
   --bg-card-hover: #2D2D2D;
 
   --primary: #D4AF37;
   --primary-light: #E8C84D;
   --primary-dark: #B8860B;
-  --secondary: #B8860B;
-  --accent: #B8860B;
+  --secondary: #FFFFFF;
+  --accent: #4CC9F0;
 
   --gradient-primary: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
-  --gradient-subtle: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(184, 134, 11, 0.12) 100%);
-  --gradient-glow: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(184, 134, 11, 0.22) 100%);
-  --gradient-hero: linear-gradient(135deg, #0B0B0B 0%, #181818 55%, #232323 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(76, 201, 240, 0.12) 100%);
+  --gradient-glow: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(76, 201, 240, 0.22) 100%);
+  --gradient-hero: linear-gradient(135deg, #0B0B0B 0%, #171717 55%, #232323 100%);
 
   --text-primary: #F5F5F5;
   --text-secondary: #E0E0E0;
@@ -36,12 +36,12 @@
   --error-bg: rgba(239, 68, 68, 0.1);
   --warning: #f59e0b;
   --warning-bg: rgba(245, 158, 11, 0.1);
-  --info: #D4AF37;
-  --info-bg: rgba(212, 175, 55, 0.1);
+  --info: #4CC9F0;
+  --info-bg: rgba(76, 201, 240, 0.1);
 
   /* Glass Effect */
   --glass-bg: rgba(23, 23, 23, 0.82);
-  --glass-border: rgba(212, 175, 55, 0.18);
+  --glass-border: #303030;
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
   --glass-blur: blur(15px);
 
@@ -73,8 +73,8 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.55);
-  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.22);
-  --shadow-glow-lg: 0 0 40px rgba(184, 134, 11, 0.16);
+  --shadow-glow: 0 0 20px rgba(76, 201, 240, 0.22);
+  --shadow-glow-lg: 0 0 40px rgba(212, 175, 55, 0.16);
 }
 
 /* ============================================================ Reset ============================================================ */
@@ -97,7 +97,7 @@ body::before {
   top: 0; left: 0; right: 0; bottom: 0;
   background:
     radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 80% 80%, rgba(76, 201, 240, 0.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plane, Calendar, Users, ArrowRight, ShieldCheck, Zap, Globe, MapPin } from 'lucide-react'
+import { Plane, Calendar, Users, ArrowRight, ShieldCheck, Zap, Globe, MapPin, TrendingUp, Clock, Star, BarChart3 } from 'lucide-react'
 import { getAirports } from '../api/axios'
 import toast from 'react-hot-toast'
 
@@ -63,16 +63,20 @@ export default function Landing() {
     { from: 'DEL', fromCity: 'New Delhi', to: 'JFK', toCity: 'New York', price: '₹55,000' }
   ]
 
+  const stats = [
+    { icon: Plane, label: 'Active Flights', value: '126+', color: '#D4AF37' },
+    { icon: Globe, label: 'Destinations', value: '12+', color: '#4CC9F0' },
+    { icon: Users, label: 'Happy Travelers', value: '50K+', color: '#10B981' },
+    { icon: ShieldCheck, label: 'Safe Booking', value: '100%', color: '#f59e0b' }
+  ]
+
   const selectPopularRoute = (route) => {
     setOrigin(route.from)
     setDestination(route.to)
-    // Set departure date to tomorrow
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     setDepDate(tomorrow.toISOString().split('T')[0])
-    
-    // Smooth scroll to search form
-    window.scrollTo({ top: 100, behavior: 'smooth' })
+    window.scrollTo({ top: 600, behavior: 'smooth' })
   }
 
   return (
@@ -99,19 +103,42 @@ export default function Landing() {
               <p className="hero-subtitle">
                 Explore the world with seamless flight search, premium seat selection, secure payment processing, and instant booking confirmation.
               </p>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <a href="#routes" className="btn-primary">
-                  Popular Routes <ArrowRight size={16} />
+              
+              {/* Stats Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+                {stats.map((stat, idx) => (
+                  <div key={idx} className="glass-card" style={{ padding: '1.25rem', textAlign: 'center' }}>
+                    <div style={{ background: `${stat.color}15`, color: stat.color, width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
+                      <stat.icon size={20} />
+                    </div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{stat.value}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontWeight: 500 }}>{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <a href="#search-section" className="btn-primary">
+                  Book Now <ArrowRight size={16} />
                 </a>
-                <a href="#how-it-works" className="btn-ghost">
-                  Learn More
+                <a href="#routes" className="btn-ghost">
+                  View Routes
                 </a>
               </div>
             </div>
 
             {/* Flight Search Card */}
-            <div className="search-card">
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', fontWeight: 800 }}>Book Flight Tickets</h2>
+            <div id="search-section" className="search-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Plane size={24} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>Book Flight Tickets</h2>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Find the best deals across 12+ destinations</p>
+                </div>
+              </div>
+              
               <form onSubmit={handleSearch}>
                 {/* Trip Type Tabs */}
                 <div className="search-tabs">
@@ -210,7 +237,7 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1.5rem', padding: '1rem' }}>
                   <Plane size={18} /> Search Flights
                 </button>
               </form>
@@ -223,39 +250,42 @@ export default function Landing() {
       <section className="section-padding" style={{ background: 'var(--bg-secondary)', position: 'relative', zIndex: 1 }}>
         <div className="page-container">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 className="gradient-text" style={{ marginBottom: '1rem' }}>Why Choose SkyWay?</h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto' }}>
+            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>Why Choose SkyWay?</h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
               We provide the best booking experience, flight schedules, and premium service to make your trip unforgettable.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2rem' }}>
-            <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-              <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary-light)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--gradient-primary)' }}></div>
+              <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary-light)', width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <Zap size={28} />
               </div>
-              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem' }}>⚡ Instant Booking</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>⚡ Instant Booking</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
                 Get your digital ticket immediately after payment, with automatic seat updates.
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg, #10B981, #4CC9F0)' }}></div>
+              <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <ShieldCheck size={28} />
               </div>
-              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem' }}>🛡️ Secure Payments</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>🛡️ Secure Payments</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
                 Multi-channel secure transactions. Rest assured your transaction details are fully protected.
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-              <div style={{ background: 'rgba(184, 134, 11, 0.14)', color: 'var(--accent)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg, #4CC9F0, #D4AF37)' }}></div>
+              <div style={{ background: 'rgba(76, 201, 240, 0.1)', color: 'var(--accent)', width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <Globe size={28} />
               </div>
-              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem' }}>✈️ 200+ Destinations</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>✈️ 200+ Destinations</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
                 Fly anywhere around the world. Connect with all major international and domestic routes.
               </p>
             </div>
@@ -267,8 +297,8 @@ export default function Landing() {
       <section id="how-it-works" className="section-padding" style={{ position: 'relative', zIndex: 1 }}>
         <div className="page-container">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 className="gradient-text" style={{ marginBottom: '1rem' }}>How It Works</h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto' }}>
+            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>How It Works</h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
               Book your next flight in just 4 simple steps.
             </p>
           </div>
@@ -301,33 +331,43 @@ export default function Landing() {
       <section id="routes" className="section-padding" style={{ background: 'var(--bg-secondary)', position: 'relative', zIndex: 1 }}>
         <div className="page-container">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 className="gradient-text" style={{ marginBottom: '1rem' }}>Popular Flight Routes</h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto' }}>
+            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>Popular Flight Routes</h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
               Discover deals on our most frequented flights. Click any card to set your route automatically.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {popularRoutes.map((route, idx) => (
               <div
                 key={idx}
                 className="glass-card"
-                style={{ padding: '1.5rem', cursor: 'pointer' }}
+                style={{ 
+                  padding: '1.5rem', 
+                  cursor: 'pointer',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
                 onClick={() => selectPopularRoute(route)}
               >
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'var(--gradient-primary)' }}></div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{route.fromCity} ({route.from})</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Origin</p>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>From</div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>{route.fromCity} ({route.from})</h3>
                   </div>
-                  <Plane size={16} style={{ color: 'var(--primary-light)' }} />
-                  <div style={{ textAlign: 'right' }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{route.toCity} ({route.to})</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Destination</p>
+                  <div style={{ padding: '0 1rem' }}>
+                    <Plane size={20} style={{ color: 'var(--primary-light)' }} />
+                  </div>
+                  <div style={{ flex: 1, textAlign: 'right' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>To</div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>{route.toCity} ({route.to})</h3>
                   </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Direct Flight</span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Clock size={14} /> Direct Flight
+                  </span>
                   <span style={{ fontWeight: 800, color: 'var(--primary-light)', fontSize: '1.1rem' }}>{route.price}</span>
                 </div>
               </div>
@@ -335,6 +375,22 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--glass-border)', padding: '3rem 0', position: 'relative', zIndex: 1 }}>
+        <div className="page-container" style={{ textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+            <Plane size={24} style={{ color: '#D4AF37' }} />
+            <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>SkyWay Airlines</span>
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            Your trusted partner for domestic and international flights.
+          </p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            © 2026 SkyWay Airlines. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
