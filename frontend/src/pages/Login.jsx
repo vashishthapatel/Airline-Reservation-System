@@ -47,12 +47,12 @@ export default function Login() {
   const fillDemoLogin = (role) => {
     if (role === 'admin') {
       setEmail('admin@airline.com')
-      setPassword('admin123')
+      setPassword('Admin@123')
       return
     }
 
     setEmail('john@example.com')
-    setPassword('customer123')
+    setPassword('Test@123')
   }
 
   return (
