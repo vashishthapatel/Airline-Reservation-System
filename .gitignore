@@ -1,0 +1,23 @@
+# Node.js / Frontend
+node_modules/
+dist/
+.env*.local
+
+# Java / Backend
+target/
+*.class
+*.jar
+*.war
+*.ear
+.metadata/
+.classpath
+.project
+.settings/
+bin/
+
+# Database
+data/
+*.db
+
+# Logs
+*.log
