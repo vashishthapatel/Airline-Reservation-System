@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,30 +32,36 @@ public class FlightService {
     private final AircraftRepository aircraftRepository;
     private final SeatRepository seatRepository;
 
+    @Transactional
     public List<FlightResponse> searchFlights(String originCode, String destinationCode, String departureDateStr, int passengers) {
         Airport origin = airportRepository.findByIataCode(originCode.toUpperCase())
                 .orElseThrow(() -> new ResourceNotFoundException("Origin airport not found: " + originCode));
         Airport destination = airportRepository.findByIataCode(destinationCode.toUpperCase())
                 .orElseThrow(() -> new ResourceNotFoundException("Destination airport not found: " + destinationCode));
 
-        List<Flight> forwardFlights;
-        List<Flight> reverseFlights;
+        if (origin.getId().equals(destination.getId())) {
+            throw new BadRequestException("Origin and destination must be different");
+        }
+        if (passengers < 1) {
+            throw new BadRequestException("At least one passenger is required");
+        }
 
-        if (departureDateStr == null || departureDateStr.trim().isEmpty()) {
-            forwardFlights = flightRepository.findByOriginAirportAndDestinationAirport(origin, destination);
-            reverseFlights = flightRepository.findByOriginAirportAndDestinationAirport(destination, origin);
-        } else {
-            LocalDate departureDate = LocalDate.parse(departureDateStr);
-            LocalDateTime startOfDay = departureDate.atStartOfDay();
-            LocalDateTime endOfDay = departureDate.atTime(LocalTime.MAX);
+        LocalDate departureDate = LocalDate.parse(departureDateStr);
+        if (departureDate.isBefore(LocalDate.now())) {
+            throw new BadRequestException("Please choose today or a future travel date");
+        }
 
-            forwardFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
-                    origin, destination, startOfDay, endOfDay
-            );
+        LocalDateTime startOfDay = departureDate.atStartOfDay();
+        LocalDateTime endOfDay = departureDate.plusDays(1).atStartOfDay().minusNanos(1);
+        List<Flight> forwardFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
+                origin, destination, startOfDay, endOfDay
+        );
 
-            reverseFlights = flightRepository.findByOriginAirportAndDestinationAirportAndDepartureTimeBetween(
-                    destination, origin, startOfDay, endOfDay
-            );
+        if (forwardFlights.isEmpty()) {
+            Flight dailyFlight = createDailyFlight(origin, destination, departureDate);
+            if (dailyFlight != null) {
+                forwardFlights = List.of(dailyFlight);
+            }
         }
 
         List<FlightResponse> allResponses = new ArrayList<>();
@@ -64,14 +70,6 @@ public class FlightService {
             if (f.getAvailableSeats() >= passengers) {
                 FlightResponse r = toFlightResponse(f);
                 r.setDirection("FORWARD");
-                allResponses.add(r);
-            }
-        }
-
-        for (Flight f : reverseFlights) {
-            if (f.getAvailableSeats() >= passengers) {
-                FlightResponse r = toFlightResponse(f);
-                r.setDirection("REVERSE");
                 allResponses.add(r);
             }
         }
@@ -96,6 +94,42 @@ public class FlightService {
         }
 
         return allResponses;
+    }
+
+    private Flight createDailyFlight(Airport origin, Airport destination, LocalDate departureDate) {
+        Flight template = flightRepository.findByOriginAirportAndDestinationAirport(origin, destination).stream()
+                .filter(flight -> flight.getStatus() == FlightStatus.SCHEDULED || flight.getStatus() == FlightStatus.DELAYED)
+                .findFirst()
+                .orElse(null);
+
+        Aircraft aircraft = template != null ? template.getAircraft() : aircraftRepository.findAll().stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("No aircraft is available to schedule this route"));
+        LocalDateTime departureTime = LocalDateTime.of(
+                departureDate,
+                template != null ? template.getDepartureTime().toLocalTime() : java.time.LocalTime.of(9, 0)
+        );
+        String flightNumber = origin.getIataCode() + destination.getIataCode()
+                + departureTime.format(DateTimeFormatter.ofPattern("yyMMddHHmm"));
+
+        return flightRepository.findByFlightNumber(flightNumber).orElseGet(() -> {
+            Flight flight = new Flight();
+            flight.setFlightNumber(flightNumber);
+            flight.setAircraft(aircraft);
+            flight.setOriginAirport(origin);
+            flight.setDestinationAirport(destination);
+            flight.setDepartureTime(departureTime);
+            flight.setArrivalTime(departureTime.plus(template != null
+                    ? Duration.between(template.getDepartureTime(), template.getArrivalTime())
+                    : Duration.ofHours(2)));
+            flight.setBasePrice(template != null ? template.getBasePrice() : BigDecimal.valueOf(5000));
+            flight.setStatus(FlightStatus.SCHEDULED);
+            flight.setAvailableSeats(aircraft.getTotalSeats());
+
+            Flight savedFlight = flightRepository.save(flight);
+            generateSeats(savedFlight, savedFlight.getAircraft(), savedFlight.getBasePrice());
+            return savedFlight;
+        });
     }
 
     public List<FlightResponse> getAllFlights() {

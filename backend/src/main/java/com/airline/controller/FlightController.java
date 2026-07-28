@@ -23,7 +23,7 @@ public class FlightController {
     public ResponseEntity<ApiResponse<List<FlightResponse>>> searchFlights(
             @RequestParam String originCode,
             @RequestParam String destinationCode,
-            @RequestParam(required = false, defaultValue = "") String departureDate,
+            @RequestParam String departureDate,
             @RequestParam(defaultValue = "1") int passengers) {
         List<FlightResponse> flights = flightService.searchFlights(originCode, destinationCode, departureDate, passengers);
         return ResponseEntity.ok(ApiResponse.success("Flights found: " + flights.size(), flights));

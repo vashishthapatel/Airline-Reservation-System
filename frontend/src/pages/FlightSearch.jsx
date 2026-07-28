@@ -67,7 +67,11 @@ export default function FlightSearch() {
 
   useEffect(() => {
     async function fetchResults() {
-      if (!originCode || !destinationCode) return
+      if (!originCode || !destinationCode || !departureDate) {
+        setFlights([])
+        setLoading(false)
+        return
+      }
       setLoading(true)
       try {
         const params = {
@@ -75,9 +79,7 @@ export default function FlightSearch() {
           destinationCode,
           passengers
         }
-        if (departureDate) {
-          params.departureDate = departureDate
-        }
+        params.departureDate = departureDate
         const res = await searchFlights(params)
         if (res.data && res.data.success) {
           setFlights(res.data.data)
@@ -101,8 +103,8 @@ export default function FlightSearch() {
 
   const handleReSearch = (e) => {
     e.preventDefault()
-    if (!tempOrigin || !tempDest) {
-      toast.error('Origin and Destination are required!')
+    if (!tempOrigin || !tempDest || !tempDate) {
+      toast.error('Origin, destination, and travel date are required!')
       return
     }
     if (tempOrigin === tempDest) {
@@ -112,7 +114,7 @@ export default function FlightSearch() {
     setSearchParams({
       originCode: tempOrigin,
       destinationCode: tempDest,
-      departureDate: tempDate || '',
+      departureDate: tempDate,
       passengers: tempPass.toString(),
       tripType
     })
@@ -164,6 +166,7 @@ export default function FlightSearch() {
           <div className="form-group">
             <label className="form-label">From</label>
             <select className="input-field" value={tempOrigin} onChange={e => setTempOrigin(e.target.value)}>
+              <option value="">Select origin</option>
               {airports.map(ap => (
                 <option key={ap.id} value={ap.iataCode}>{ap.city} ({ap.iataCode})</option>
               ))}
@@ -172,6 +175,7 @@ export default function FlightSearch() {
           <div className="form-group">
             <label className="form-label">To</label>
             <select className="input-field" value={tempDest} onChange={e => setTempDest(e.target.value)}>
+              <option value="">Select destination</option>
               {airports.map(ap => (
                 <option key={ap.id} value={ap.iataCode}>{ap.city} ({ap.iataCode})</option>
               ))}
@@ -179,7 +183,14 @@ export default function FlightSearch() {
           </div>
           <div className="form-group">
             <label className="form-label">Departure Date</label>
-            <input type="date" className="input-field" value={tempDate} onChange={e => setTempDate(e.target.value)} />
+            <input
+              type="date"
+              className="input-field"
+              value={tempDate}
+              min={new Date().toISOString().split('T')[0]}
+              onChange={e => setTempDate(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Passengers</label>
