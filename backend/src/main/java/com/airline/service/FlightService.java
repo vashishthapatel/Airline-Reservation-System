@@ -21,11 +21,30 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FlightService {
+
+    private static final Map<String, double[]> AIRPORT_COORDINATES = Map.ofEntries(
+            Map.entry("DEL", new double[]{28.5562, 77.1000}),
+            Map.entry("BOM", new double[]{19.0896, 72.8656}),
+            Map.entry("BLR", new double[]{13.1986, 77.7066}),
+            Map.entry("MAA", new double[]{12.9941, 80.1709}),
+            Map.entry("HYD", new double[]{17.2403, 78.4294}),
+            Map.entry("CCU", new double[]{22.6547, 88.4467}),
+            Map.entry("GOI", new double[]{15.3800, 73.8314}),
+            Map.entry("JFK", new double[]{40.6413, -73.7781}),
+            Map.entry("LHR", new double[]{51.4700, -0.4543}),
+            Map.entry("DXB", new double[]{25.2532, 55.3657}),
+            Map.entry("SIN", new double[]{1.3644, 103.9915}),
+            Map.entry("BKK", new double[]{13.6900, 100.7501}),
+            Map.entry("SYD", new double[]{-33.9399, 151.1753}),
+            Map.entry("CDG", new double[]{49.0097, 2.5479}),
+            Map.entry("FRA", new double[]{50.0379, 8.5622})
+    );
 
     private final FlightRepository flightRepository;
     private final AirportRepository airportRepository;
@@ -109,6 +128,8 @@ public class FlightService {
                 departureDate,
                 template != null ? template.getDepartureTime().toLocalTime() : java.time.LocalTime.of(9, 0)
         );
+        long durationMinutes = calculateDurationMinutes(origin, destination);
+        BigDecimal basePrice = calculateBasePrice(origin, destination);
         String flightNumber = origin.getIataCode() + destination.getIataCode()
                 + departureTime.format(DateTimeFormatter.ofPattern("yyMMddHHmm"));
 
@@ -119,10 +140,8 @@ public class FlightService {
             flight.setOriginAirport(origin);
             flight.setDestinationAirport(destination);
             flight.setDepartureTime(departureTime);
-            flight.setArrivalTime(departureTime.plus(template != null
-                    ? Duration.between(template.getDepartureTime(), template.getArrivalTime())
-                    : Duration.ofHours(2)));
-            flight.setBasePrice(template != null ? template.getBasePrice() : BigDecimal.valueOf(5000));
+            flight.setArrivalTime(departureTime.plusMinutes(durationMinutes));
+            flight.setBasePrice(basePrice);
             flight.setStatus(FlightStatus.SCHEDULED);
             flight.setAvailableSeats(aircraft.getTotalSeats());
 
@@ -130,6 +149,36 @@ public class FlightService {
             generateSeats(savedFlight, savedFlight.getAircraft(), savedFlight.getBasePrice());
             return savedFlight;
         });
+    }
+
+    private long calculateDurationMinutes(Airport origin, Airport destination) {
+        double distanceKm = calculateDistanceKm(origin, destination);
+        double totalMinutes = 40 + (distanceKm / 800.0 * 60);
+        return Math.max(60, (long) Math.ceil(totalMinutes / 5) * 5);
+    }
+
+    private BigDecimal calculateBasePrice(Airport origin, Airport destination) {
+        double distanceKm = calculateDistanceKm(origin, destination);
+        boolean international = !origin.getCountry().equalsIgnoreCase(destination.getCountry());
+        double ratePerKm = international ? 4.7 : 2.7;
+        double fixedCharge = 1500;
+        long roundedFare = Math.round((fixedCharge + distanceKm * ratePerKm) / 100.0) * 100;
+        return BigDecimal.valueOf(Math.max(3000, roundedFare));
+    }
+
+    private double calculateDistanceKm(Airport origin, Airport destination) {
+        double[] originCoordinates = AIRPORT_COORDINATES.get(origin.getIataCode());
+        double[] destinationCoordinates = AIRPORT_COORDINATES.get(destination.getIataCode());
+        if (originCoordinates == null || destinationCoordinates == null) {
+            return origin.getCountry().equalsIgnoreCase(destination.getCountry()) ? 1000 : 7000;
+        }
+
+        double latitudeDelta = Math.toRadians(destinationCoordinates[0] - originCoordinates[0]);
+        double longitudeDelta = Math.toRadians(destinationCoordinates[1] - originCoordinates[1]);
+        double a = Math.sin(latitudeDelta / 2) * Math.sin(latitudeDelta / 2)
+                + Math.cos(Math.toRadians(originCoordinates[0])) * Math.cos(Math.toRadians(destinationCoordinates[0]))
+                * Math.sin(longitudeDelta / 2) * Math.sin(longitudeDelta / 2);
+        return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
     public List<FlightResponse> getAllFlights() {

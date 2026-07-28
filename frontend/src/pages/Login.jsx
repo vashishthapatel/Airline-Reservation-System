@@ -1,16 +1,57 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { login as loginApi } from '../api/axios'
+import { getCurrentUser, getGoogleAuthConfig, login as loginApi } from '../api/axios'
 import { Mail, Lock, LogIn } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [googleEnabled, setGoogleEnabled] = useState(false)
+
+  useEffect(() => {
+    getGoogleAuthConfig()
+      .then(res => setGoogleEnabled(res.data?.data === true))
+      .catch(() => setGoogleEnabled(false))
+  }, [])
+
+  useEffect(() => {
+    const googleStatus = searchParams.get('google')
+    const token = searchParams.get('token')
+    if (!googleStatus) return
+
+    if (googleStatus !== 'success' || !token) {
+      toast.error('Google sign-in could not be completed.')
+      setSearchParams({})
+      return
+    }
+
+    async function completeGoogleSignIn() {
+      setSubmitting(true)
+      localStorage.setItem('airline_token', token)
+      try {
+        const res = await getCurrentUser()
+        if (res.data?.success) {
+          login({ ...res.data.data, token })
+          toast.success('Signed in with Google!')
+          navigate('/')
+        }
+      } catch (err) {
+        localStorage.removeItem('airline_token')
+        toast.error('Google sign-in could not be completed.')
+      } finally {
+        setSubmitting(false)
+        setSearchParams({})
+      }
+    }
+
+    completeGoogleSignIn()
+  }, [login, navigate, searchParams, setSearchParams])
 
   const signIn = async (loginEmail, loginPassword) => {
     const normalizedEmail = loginEmail.trim().toLowerCase()
@@ -56,6 +97,10 @@ export default function Login() {
     setEmail(demo.email)
     setPassword(demo.password)
     signIn(demo.email, demo.password)
+  }
+
+  const signInWithGoogle = () => {
+    window.location.assign('/oauth2/authorization/google')
   }
 
   return (
@@ -114,6 +159,18 @@ export default function Login() {
           >
             <LogIn size={16} /> {submitting ? 'Signing In...' : 'Sign In'}
           </button>
+
+          {googleEnabled && (
+            <button
+              type="button"
+              className="btn-ghost"
+              style={{ width: '100%', justifyContent: 'center' }}
+              onClick={signInWithGoogle}
+              disabled={submitting}
+            >
+              Sign in with Google
+            </button>
+          )}
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
