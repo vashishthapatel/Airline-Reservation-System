@@ -72,7 +72,7 @@ export default function App() {
                 <Payment />
               </ProtectedRoute>
             } />
-            <Route path="/booking/confirmation" element={
+            <Route path="/booking/ticket/:bookingId" element={
               <ProtectedRoute>
                 <BookingConfirmation />
               </ProtectedRoute>

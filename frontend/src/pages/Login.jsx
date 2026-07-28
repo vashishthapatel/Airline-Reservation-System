@@ -12,17 +12,16 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const normalizedEmail = email.trim().toLowerCase()
-    if (!normalizedEmail || !password) {
+  const signIn = async (loginEmail, loginPassword) => {
+    const normalizedEmail = loginEmail.trim().toLowerCase()
+    if (!normalizedEmail || !loginPassword) {
       toast.error('Please enter email and password!')
       return
     }
 
     setSubmitting(true)
     try {
-      const res = await loginApi({ email: normalizedEmail, password })
+      const res = await loginApi({ email: normalizedEmail, password: loginPassword })
       if (res.data && res.data.success) {
         toast.success(res.data.message || 'Login successful!')
         login(res.data.data) // Stores JWT token and user in context & localStorage
@@ -44,15 +43,19 @@ export default function Login() {
     }
   }
 
-  const fillDemoLogin = (role) => {
-    if (role === 'admin') {
-      setEmail('admin@airline.com')
-      setPassword('admin123')
-      return
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    signIn(email, password)
+  }
 
-    setEmail('john@example.com')
-    setPassword('customer123')
+  const signInWithDemo = (role) => {
+    const demo = role === 'admin'
+      ? { email: 'admin@airline.com', password: 'admin123' }
+      : { email: 'john@example.com', password: 'customer123' }
+
+    setEmail(demo.email)
+    setPassword(demo.password)
+    signIn(demo.email, demo.password)
   }
 
   return (
@@ -65,10 +68,10 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-            <button type="button" className="btn-ghost btn-sm" onClick={() => fillDemoLogin('customer')}>
+            <button type="button" className="btn-ghost btn-sm" onClick={() => signInWithDemo('customer')} disabled={submitting}>
               Customer Demo
             </button>
-            <button type="button" className="btn-ghost btn-sm" onClick={() => fillDemoLogin('admin')}>
+            <button type="button" className="btn-ghost btn-sm" onClick={() => signInWithDemo('admin')} disabled={submitting}>
               Admin Demo
             </button>
           </div>

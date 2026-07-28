@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
 import { getBookingById, getPaymentByBookingId } from '../api/axios'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { Check, Printer, FileText, ArrowRight, Plane, Calendar, User, CreditCard } from 'lucide-react'
@@ -7,13 +7,13 @@ import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
 export default function BookingConfirmation() {
-  const [searchParams] = useSearchParams()
+  const { bookingId } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
-  const bookingId = searchParams.get('bookingId')
 
-  const [booking, setBooking] = useState(null)
-  const [payment, setPayment] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [booking, setBooking] = useState(() => location.state?.booking || null)
+  const [payment, setPayment] = useState(() => location.state?.payment || null)
+  const [loading, setLoading] = useState(() => !location.state?.booking || !location.state?.payment)
 
   useEffect(() => {
     if (!bookingId) {
@@ -22,16 +22,21 @@ export default function BookingConfirmation() {
       return
     }
 
+    if (location.state?.booking && location.state?.payment) {
+      return
+    }
+
     async function loadConfirmation() {
       setLoading(true)
       try {
-        const bookRes = await getBookingById(bookingId)
+        const [bookRes, payRes] = await Promise.all([
+          getBookingById(bookingId),
+          getPaymentByBookingId(bookingId)
+        ])
         if (bookRes.data && bookRes.data.success) {
           setBooking(bookRes.data.data)
         }
 
-        // Load payment info
-        const payRes = await getPaymentByBookingId(bookingId)
         if (payRes.data && payRes.data.success) {
           setPayment(payRes.data.data)
         }
@@ -43,14 +48,16 @@ export default function BookingConfirmation() {
       }
     }
     loadConfirmation()
-  }, [bookingId, navigate])
+  }, [bookingId, location.state, navigate])
 
   const handlePrint = () => {
     window.print()
   }
 
   if (loading) return <LoadingSpinner />
-  if (!booking) return <div style={{ padding: '3rem', textAlign: 'center' }}>Booking not found.</div>
+  if (!booking || booking.status !== 'CONFIRMED' || payment?.status !== 'SUCCESS') {
+    return <div style={{ padding: '3rem', textAlign: 'center' }}>A confirmed ticket was not found.</div>
+  }
 
   const depTime = booking.flight ? new Date(booking.flight.departureTime) : null
   const arrTime = booking.flight ? new Date(booking.flight.arrivalTime) : null

@@ -28,8 +28,11 @@ public class PaymentController {
     }
 
     @GetMapping("/booking/{bookingId}")
-    public ResponseEntity<ApiResponse<PaymentResponse>> getPaymentByBookingId(@PathVariable Long bookingId) {
-        return ResponseEntity.ok(ApiResponse.success("Success", paymentService.getPaymentByBookingId(bookingId)));
+    public ResponseEntity<ApiResponse<PaymentResponse>> getPaymentByBookingId(
+            @PathVariable Long bookingId,
+            Authentication authentication) {
+        Long userId = getUserId(authentication);
+        return ResponseEntity.ok(ApiResponse.success("Success", paymentService.getPaymentByBookingId(bookingId, userId)));
     }
 
     private Long getUserId(Authentication authentication) {

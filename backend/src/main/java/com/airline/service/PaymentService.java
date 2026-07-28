@@ -91,9 +91,13 @@ public class PaymentService {
         );
     }
 
-    public PaymentResponse getPaymentByBookingId(Long bookingId) {
+    public PaymentResponse getPaymentByBookingId(Long bookingId, Long userId) {
         Payment payment = paymentRepository.findByBookingId(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment not found for booking: " + bookingId));
+
+        if (!payment.getBooking().getUser().getId().equals(userId)) {
+            throw new BadRequestException("Access denied");
+        }
 
         return new PaymentResponse(
                 payment.getId(),

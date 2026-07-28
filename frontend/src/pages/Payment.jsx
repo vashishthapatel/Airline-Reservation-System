@@ -109,7 +109,13 @@ export default function Payment() {
         sessionStorage.removeItem('passengerDetails')
         sessionStorage.removeItem('passengerCount')
 
-        navigate(`/booking/confirmation?bookingId=${booking.id}`)
+        navigate(`/booking/ticket/${booking.id}`, {
+          replace: true,
+          state: {
+            booking: { ...booking, status: 'CONFIRMED' },
+            payment: res.data.data
+          }
+        })
       } else {
         toast.error('Payment Failed! Please try again with different credentials.')
       }

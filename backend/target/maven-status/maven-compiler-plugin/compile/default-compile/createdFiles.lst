@@ -35,6 +35,7 @@ com\airline\AirlineBackendApplication.class
 com\airline\repository\PassengerRepository.class
 com\airline\entity\Passenger.class
 com\airline\entity\User.class
+com\airline\controller\HomeController.class
 com\airline\dto\PassengerResponse.class
 com\airline\repository\AirportRepository.class
 com\airline\dto\CreateFlightRequest.class

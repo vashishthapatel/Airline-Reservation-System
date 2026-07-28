@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
-import { Plane, Calendar, Users, DollarSign, XCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Plane, Calendar, Users, Printer, XCircle } from 'lucide-react'
 
 function formatPrice(price) {
   return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price)
@@ -70,11 +71,16 @@ export default function BookingCard({ booking, onCancel }) {
         </div>
       )}
 
-      {booking.status === 'CONFIRMED' && onCancel && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button className="btn-danger" onClick={() => onCancel(booking.id)}>
-            <XCircle size={14} /> Cancel Booking
-          </button>
+      {booking.status === 'CONFIRMED' && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <Link to={`/booking/ticket/${booking.id}`} className="btn-ghost btn-sm">
+            <Printer size={14} /> View / Print Ticket
+          </Link>
+          {onCancel && (
+            <button className="btn-danger" onClick={() => onCancel(booking.id)}>
+              <XCircle size={14} /> Cancel Booking
+            </button>
+          )}
         </div>
       )}
     </div>
