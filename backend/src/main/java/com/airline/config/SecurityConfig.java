@@ -1,10 +1,12 @@
 package com.airline.config;
 
 import com.airline.security.JwtAuthenticationFilter;
+import com.airline.security.GoogleOAuth2SuccessHandler;
 import com.airline.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -34,6 +36,10 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsServiceImpl userDetailsService;
+    private final GoogleOAuth2SuccessHandler googleOAuth2SuccessHandler;
+
+    @Value("${app.google-auth.enabled:false}")
+    private boolean googleAuthEnabled;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,7 +47,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/google/config").permitAll()
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/flights/**").permitAll()
@@ -53,9 +60,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/flights/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        if (googleAuthEnabled) {
+            http.oauth2Login(oauth2 -> oauth2.successHandler(googleOAuth2SuccessHandler));
+        }
 
         return http.build();
     }
