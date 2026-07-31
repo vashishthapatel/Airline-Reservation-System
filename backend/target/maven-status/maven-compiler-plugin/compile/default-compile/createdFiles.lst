@@ -27,6 +27,7 @@ com\airline\dto\BookingRequest.class
 com\airline\config\SecurityConfig.class
 com\airline\security\UserDetailsServiceImpl.class
 com\airline\dto\BookingResponse.class
+com\airline\config\PasswordConfig.class
 com\airline\repository\UserRepository.class
 com\airline\repository\BookingRepository.class
 com\airline\service\AdminService.class
@@ -58,4 +59,5 @@ com\airline\repository\PaymentRepository.class
 com\airline\entity\Flight.class
 com\airline\entity\FlightStatus.class
 com\airline\entity\Seat.class
+com\airline\security\GoogleOAuth2SuccessHandler.class
 com\airline\exception\GlobalExceptionHandler.class
