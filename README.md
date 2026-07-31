@@ -129,6 +129,24 @@ Once the application loads, you can use the quick **Demo Logins** on the login p
 * `JWT_SECRET`: Secret signing key for JWT tokens.
 * `FRONTEND_URL`: URL of the frontend (for CORS configuration).
 
+### Google Sign-In Setup
+Google sign-in is optional and stays disabled until it is configured. Create a Web application OAuth client in Google Cloud Console and add this redirect URI:
+
+```text
+http://localhost:8080/login/oauth2/code/google
+```
+
+Then start the backend with these environment variables:
+
+```text
+SPRING_PROFILES_ACTIVE=google
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+FRONTEND_URL=http://localhost:5173
+```
+
+For deployment, replace the localhost redirect URI and `FRONTEND_URL` with the deployed backend and frontend URLs. Once enabled, the login page displays **Sign in with Google** and creates a customer account automatically on first sign-in.
+
 ---
 
 ## 📡 API Endpoints Summary
