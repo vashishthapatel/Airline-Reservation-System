@@ -147,6 +147,17 @@ FRONTEND_URL=http://localhost:5173
 
 For deployment, replace the localhost redirect URI and `FRONTEND_URL` with the deployed backend and frontend URLs. Once enabled, the login page displays **Sign in with Google** and creates a customer account automatically on first sign-in.
 
+For Render, add these variables to the **backend** service and redeploy:
+
+```text
+SPRING_PROFILES_ACTIVE=google
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+FRONTEND_URL=https://your-frontend.onrender.com
+```
+
+Set the frontend service build variable to `VITE_API_URL=https://your-backend.onrender.com/api`. In Google Cloud Console, add `https://your-backend.onrender.com/login/oauth2/code/google` as an authorized redirect URI. Use the exact public Render URLs, not internal `host:port` values.
+
 If Google reports that a user is not supported or is not allowed to sign in, open Google Cloud Console and check the OAuth consent screen. While the app is in **Testing**, add the Google account under **Test users**. If the app is intended for general users, set the publishing status to **In production** and use an **External** audience. Also make sure the redirect URI exactly matches the backend URL, including `/login/oauth2/code/google`.
 
 ---
