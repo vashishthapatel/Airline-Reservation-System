@@ -26,6 +26,12 @@ export default function Login() {
     const token = searchParams.get('token')
     if (!googleStatus) return
 
+    if (googleStatus === 'unregistered') {
+      toast.error('No account exists for this Google email. Please use Sign up with Google first.')
+      setSearchParams({})
+      return
+    }
+
     if (googleStatus === 'error') {
       toast.error(googleReason === 'unsupported-user'
         ? 'This Google account is not allowed for this OAuth app. Add it as a test user in Google Cloud Console or publish the app for external users.'
@@ -129,7 +135,7 @@ export default function Login() {
     let backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
     if (backendUrl === '/api') backendUrl = 'http://localhost:8080'
     backendUrl = backendUrl.replace(/\/api\/?$/, '')
-    window.location.assign(`${backendUrl}/oauth2/authorization/google`)
+    window.location.assign(`${backendUrl}/api/auth/google/start?mode=login`)
   }
 
   return (

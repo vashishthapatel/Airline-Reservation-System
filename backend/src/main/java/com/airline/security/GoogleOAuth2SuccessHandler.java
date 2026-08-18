@@ -60,12 +60,24 @@ public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         }
 
         String normalizedEmail = email.trim().toLowerCase();
+        String authMode = "login";
+        if (request.getSession(false) != null) {
+            Object storedMode = request.getSession(false).getAttribute("googleAuthMode");
+            if ("signup".equals(storedMode)) {
+                authMode = "signup";
+            }
+            request.getSession(false).removeAttribute("googleAuthMode");
+        }
 
         try {
-            boolean isNewUser = !userRepository.existsByEmail(normalizedEmail);
-            log.info("Existing user found: {}", !isNewUser);
+            User existingUser = userRepository.findByEmail(normalizedEmail).orElse(null);
+            if (existingUser == null && "login".equals(authMode)) {
+                log.info("Google login rejected because no account exists for this email");
+                redirectToLogin(request, response, "unregistered");
+                return;
+            }
 
-            User user = userRepository.findByEmail(email.toLowerCase()).orElseGet(() -> {
+            User user = existingUser != null ? existingUser : userRepository.findByEmail(normalizedEmail).orElseGet(() -> {
                 log.info("Creating new user from Google account");
                 User newUser = new User();
                 
@@ -99,7 +111,16 @@ public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             
         } catch (Exception e) {
             log.error("Error processing Google login", e);
-            getRedirectStrategy().sendRedirect(request, response, frontendUrl + "/login?google=error");
+            redirectToLogin(request, response, "error");
         }
+    }
+
+    private void redirectToLogin(HttpServletRequest request, HttpServletResponse response, String reason) throws IOException {
+        String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
+                .path("/login")
+                .queryParam("google", reason)
+                .build()
+                .toUriString();
+        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }
