@@ -521,6 +521,7 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
 .hero-section {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   position: relative;
@@ -826,11 +827,12 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
 .cinematic-hero {
   background:
-    url('/airplane-bg.jpg'),
+    url('/hero-background.jpg'),
     linear-gradient(90deg, rgba(var(--midnight-rgb),0.74) 0%, rgba(var(--midnight-rgb),0.4) 60%, rgba(var(--midnight-rgb),0.56) 100%),
     linear-gradient(180deg, var(--dark-surface) 0%, var(--bg-secondary) 100%);
+  background-color: var(--dark-surface);
   background-size: cover, cover, cover;
-  background-position: center, center, center;
+  background-position: 35% center, center, center;
   background-repeat: no-repeat;
   background-attachment: fixed, scroll, scroll;
   position: relative;
@@ -1319,6 +1321,8 @@ select.input-field option { background: var(--bg-card); color: var(--text-primar
 
   .cinematic-hero {
     background-attachment: scroll, scroll, scroll;
+    background-size: cover, cover, cover;
+    background-position: 35% center, center, center;
   }
 }
 
