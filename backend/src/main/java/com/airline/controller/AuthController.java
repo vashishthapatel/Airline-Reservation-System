@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -42,6 +44,15 @@ public class AuthController {
     @GetMapping("/google/config")
     public ResponseEntity<ApiResponse<Boolean>> googleConfig() {
         return ResponseEntity.ok(ApiResponse.success("Success", googleAuthEnabled));
+    }
+
+    @GetMapping("/google/start")
+    public void startGoogleAuth(@RequestParam(defaultValue = "login") String mode,
+                                jakarta.servlet.http.HttpServletRequest request,
+                                HttpServletResponse response) throws IOException {
+        String authMode = "signup".equalsIgnoreCase(mode) ? "signup" : "login";
+        request.getSession(true).setAttribute("googleAuthMode", authMode);
+        response.sendRedirect("/oauth2/authorization/google");
     }
 
     @GetMapping("/me")

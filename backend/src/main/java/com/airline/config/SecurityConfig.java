@@ -53,7 +53,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/google/config").permitAll()
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/google/config", "/api/auth/google/start").permitAll()
                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/").permitAll()

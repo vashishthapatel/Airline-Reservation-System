@@ -26,7 +26,7 @@ export default function Register() {
     let backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
     if (backendUrl === '/api') backendUrl = 'http://localhost:8080'
     backendUrl = backendUrl.replace(/\/api\/?$/, '')
-    window.location.assign(`${backendUrl}/oauth2/authorization/google`)
+    window.location.assign(`${backendUrl}/api/auth/google/start?mode=signup`)
   }
 
   const handleSubmit = async (e) => {
