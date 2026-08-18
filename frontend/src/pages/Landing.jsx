@@ -116,7 +116,7 @@ export default function Landing() {
             muted
             loop
             playsInline
-            poster="/airplane-bg.jpg"
+            poster="/hero-background.jpg"
             aria-hidden="true"
           >
             <source src={heroVideoUrl} type="video/mp4" />
