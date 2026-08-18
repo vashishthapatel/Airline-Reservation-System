@@ -24,11 +24,17 @@ services:
         value: org.h2.Driver
       - key: JPA_DDL_AUTO
         value: update
+      - key: SPRING_PROFILES_ACTIVE
+        value: google
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
       - key: FRONTEND_URL
         fromService:
           type: web
           name: airline-frontend
-          property: hostport
+          envVarKey: RENDER_EXTERNAL_URL
 
   - type: web
     name: airline-frontend
@@ -42,7 +48,7 @@ services:
         fromService:
           type: web
           name: airline-backend
-          property: hostport
+          envVarKey: RENDER_EXTERNAL_URL
         prependPath: /api
 
 databases:
