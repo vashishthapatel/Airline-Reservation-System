@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.util.UriComponentsBuilder;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -28,6 +29,9 @@ public class AuthController {
 
     @Value("${app.google-auth.enabled:false}")
     private boolean googleAuthEnabled;
+
+    @Value("${app.frontend-url:${FRONTEND_URL:http://localhost:5173}}")
+    private String frontendUrl;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
@@ -50,6 +54,18 @@ public class AuthController {
     public void startGoogleAuth(@RequestParam(defaultValue = "login") String mode,
                                 jakarta.servlet.http.HttpServletRequest request,
                                 HttpServletResponse response) throws IOException {
+        if (!googleAuthEnabled) {
+            String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
+                    .path("/login")
+                    .queryParam("google", "error")
+                    .queryParam("reason", "oauth-disabled")
+                    .build()
+                    .encode()
+                    .toUriString();
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+
         String authMode = "signup".equalsIgnoreCase(mode) ? "signup" : "login";
         request.getSession(true).setAttribute("googleAuthMode", authMode);
         response.sendRedirect("/oauth2/authorization/google");

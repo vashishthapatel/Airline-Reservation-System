@@ -35,6 +35,8 @@ export default function Login() {
     if (googleStatus === 'error') {
       toast.error(googleReason === 'unsupported-user'
         ? 'This Google account is not allowed for this OAuth app. Add it as a test user in Google Cloud Console or publish the app for external users.'
+        : googleReason === 'oauth-disabled'
+          ? 'Google sign-in is not enabled for this app.'
         : 'Google sign-in failed or was cancelled.')
       setSearchParams({})
       return
