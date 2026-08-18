@@ -101,7 +101,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        String frontendOrigin = System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:5173");
+        String frontendOrigin = frontendUrl;
         if (frontendOrigin == null || frontendOrigin.isBlank()) {
             frontendOrigin = "http://localhost:5173";
         }
