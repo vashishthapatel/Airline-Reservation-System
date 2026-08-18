@@ -33,10 +33,10 @@ export default function App() {
           toastOptions={{
             duration: 4000,
             style: {
-              background: '#FFFCF7',
-              color: '#14212D',
-              border: '1px solid rgba(20, 33, 45, 0.12)',
-              boxShadow: '0 8px 24px rgba(20, 33, 45, 0.12)'
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--glass-border)',
+              boxShadow: 'var(--glass-shadow)'
             }
           }}
         />
