@@ -22,8 +22,29 @@ export default function Login() {
 
   useEffect(() => {
     const googleStatus = searchParams.get('google')
+    const googleReason = searchParams.get('reason')
     const token = searchParams.get('token')
     if (!googleStatus) return
+
+    if (googleStatus === 'error') {
+      toast.error(googleReason === 'unsupported-user'
+        ? 'This Google account is not allowed for this OAuth app. Add it as a test user in Google Cloud Console or publish the app for external users.'
+        : 'Google sign-in failed or was cancelled.')
+      setSearchParams({})
+      return
+    }
+
+    if (googleStatus === 'missing-email') {
+      toast.error('Google account did not provide an email address.')
+      setSearchParams({})
+      return
+    }
+
+    if (googleStatus === 'unverified-email') {
+      toast.error('Your Google email address is not verified.')
+      setSearchParams({})
+      return
+    }
 
     if (googleStatus !== 'success' || !token) {
       toast.error('Google sign-in could not be completed.')
@@ -39,11 +60,16 @@ export default function Login() {
         if (res.data?.success) {
           login({ ...res.data.data, token })
           toast.success('Signed in with Google!')
-          navigate('/')
+          if (res.data.data.role === 'ADMIN') {
+            navigate('/admin')
+          } else {
+            navigate('/')
+          }
         }
       } catch (err) {
         localStorage.removeItem('airline_token')
-        toast.error('Google sign-in could not be completed.')
+        const errorMsg = err.response?.data?.message || err.message || 'Unknown error'
+        toast.error(`Google sign-in could not be completed. Error: ${errorMsg}`)
       } finally {
         setSubmitting(false)
         setSearchParams({})
@@ -100,7 +126,10 @@ export default function Login() {
   }
 
   const signInWithGoogle = () => {
-    window.location.assign('/oauth2/authorization/google')
+    let backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+    if (backendUrl === '/api') backendUrl = 'http://localhost:8080'
+    backendUrl = backendUrl.replace(/\/api\/?$/, '')
+    window.location.assign(`${backendUrl}/oauth2/authorization/google`)
   }
 
   return (

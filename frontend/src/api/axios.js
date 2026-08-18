@@ -20,7 +20,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       const isLoginRequest = error.config?.url?.endsWith('/auth/login')
-      if (!isLoginRequest) {
+      const isAuthMeRequest = error.config?.url?.endsWith('/auth/me')
+      if (!isLoginRequest && !isAuthMeRequest) {
         localStorage.removeItem('airline_user')
         localStorage.removeItem('airline_token')
         window.location.href = '/login'

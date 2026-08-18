@@ -6,6 +6,7 @@ import com.airline.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -33,31 +35,71 @@ public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) throws IOException {
+        
+        log.info("Google OAuth successful");
+        
         OAuth2User googleUser = (OAuth2User) authentication.getPrincipal();
         String email = googleUser.getAttribute("email");
+        String givenName = googleUser.getAttribute("given_name");
+        String familyName = googleUser.getAttribute("family_name");
         String name = googleUser.getAttribute("name");
+        Boolean emailVerified = googleUser.getAttribute("email_verified");
+
+        log.info("Google email received: {}", email);
 
         if (email == null || email.isBlank()) {
+            log.error("Google didn't provide an email");
             getRedirectStrategy().sendRedirect(request, response, frontendUrl + "/login?google=missing-email");
             return;
         }
 
-        User user = userRepository.findByEmail(email.toLowerCase()).orElseGet(() -> {
-            User newUser = new User();
-            newUser.setName(name == null || name.isBlank() ? email : name);
-            newUser.setEmail(email.toLowerCase());
-            newUser.setPhone("Google account");
-            newUser.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
-            newUser.setRole(UserRole.CUSTOMER);
-            return userRepository.save(newUser);
-        });
+        if (Boolean.FALSE.equals(emailVerified)) {
+            log.error("Google email is not verified");
+            getRedirectStrategy().sendRedirect(request, response, frontendUrl + "/login?google=unverified-email");
+            return;
+        }
 
-        String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
-                .path("/login")
-                .queryParam("google", "success")
-                .queryParam("token", jwtUtil.generateToken(user.getEmail()))
-                .build()
-                .toUriString();
-        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+        String normalizedEmail = email.trim().toLowerCase();
+
+        try {
+            boolean isNewUser = !userRepository.existsByEmail(normalizedEmail);
+            log.info("Existing user found: {}", !isNewUser);
+
+            User user = userRepository.findByEmail(email.toLowerCase()).orElseGet(() -> {
+                log.info("Creating new user from Google account");
+                User newUser = new User();
+                
+                String displayName = name;
+                if ((displayName == null || displayName.isBlank()) && givenName != null) {
+                    displayName = familyName != null ? givenName + " " + familyName : givenName;
+                }
+                
+                newUser.setName(displayName == null || displayName.isBlank() ? email : displayName);
+                newUser.setEmail(normalizedEmail);
+                newUser.setPhone("Google account");
+                newUser.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
+                newUser.setRole(UserRole.CUSTOMER);
+                return userRepository.save(newUser);
+            });
+            
+            log.info("Google user created/retrieved successfully. Generating JWT.");
+
+            String token = jwtUtil.generateToken(user.getEmail());
+            log.info("JWT generated: true");
+
+            String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
+                    .path("/login")
+                    .queryParam("google", "success")
+                    .queryParam("token", token)
+                    .build()
+                    .toUriString();
+                    
+            log.info("Redirecting to React");
+            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+            
+        } catch (Exception e) {
+            log.error("Error processing Google login", e);
+            getRedirectStrategy().sendRedirect(request, response, frontendUrl + "/login?google=error");
+        }
     }
 }

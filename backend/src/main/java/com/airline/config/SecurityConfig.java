@@ -4,6 +4,7 @@ import com.airline.security.JwtAuthenticationFilter;
 import com.airline.security.GoogleOAuth2SuccessHandler;
 import com.airline.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -40,6 +43,9 @@ public class SecurityConfig {
 
     @Value("${app.google-auth.enabled:false}")
     private boolean googleAuthEnabled;
+
+    @Value("${app.frontend-url:${FRONTEND_URL:http://localhost:5173}}")
+    private String frontendUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -65,7 +71,28 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         if (googleAuthEnabled) {
-            http.oauth2Login(oauth2 -> oauth2.successHandler(googleOAuth2SuccessHandler));
+            http.oauth2Login(oauth2 -> oauth2
+                .successHandler(googleOAuth2SuccessHandler)
+                .failureHandler((request, response, exception) -> {
+                    String message = exception.getMessage() == null
+                            ? ""
+                            : exception.getMessage().toLowerCase();
+                    String reason = message.contains("access_denied")
+                            || message.contains("unsupported")
+                            || (message.contains("user") && message.contains("support"))
+                            ? "unsupported-user"
+                            : "oauth-failed";
+                    log.error("Google OAuth failed: {}", exception.getMessage(), exception);
+                    String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
+                            .path("/login")
+                            .queryParam("google", "error")
+                            .queryParam("reason", reason)
+                            .build()
+                            .encode()
+                            .toUriString();
+                    response.sendRedirect(redirectUrl);
+                })
+            );
         }
 
         return http.build();
@@ -78,7 +105,6 @@ public class SecurityConfig {
         if (frontendOrigin == null || frontendOrigin.isBlank()) {
             frontendOrigin = "http://localhost:5173";
         }
-        configuration.setAllowedOrigins(List.of(frontendOrigin));
         configuration.setAllowedOriginPatterns(List.of(
                 frontendOrigin,
                 "https://*.onrender.com",
