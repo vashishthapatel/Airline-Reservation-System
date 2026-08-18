@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -44,9 +46,29 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AuthResponse>> currentUser(Authentication authentication) {
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        AuthResponse response = new AuthResponse(null, user.getRole().name(), user.getName(), user.getEmail(), user.getId());
-        return ResponseEntity.ok(ApiResponse.success("Success", response));
+        String email = resolveEmail(authentication);
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Not authenticated"));
+        }
+        return userRepository.findByEmail(email.trim().toLowerCase())
+                .map(user -> {
+                    AuthResponse response = new AuthResponse(null, user.getRole().name(), user.getName(), user.getEmail(), user.getId());
+                    return ResponseEntity.ok(ApiResponse.success("Success", response));
+                })
+                .orElseGet(() -> ResponseEntity.status(404).body(ApiResponse.error("User not found")));
+    }
+
+    private String resolveEmail(Authentication authentication) {
+        if (authentication == null) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        if (principal instanceof OAuth2User oauth2User) {
+            return oauth2User.getAttribute("email");
+        }
+        return authentication.getName();
     }
 }

@@ -3,6 +3,8 @@ package com.airline.controller;
 import com.airline.dto.ApiResponse;
 import com.airline.dto.BookingRequest;
 import com.airline.dto.BookingResponse;
+import com.airline.entity.User;
+import com.airline.exception.ResourceNotFoundException;
 import com.airline.repository.UserRepository;
 import com.airline.service.BookingService;
 import lombok.RequiredArgsConstructor;
@@ -53,9 +55,8 @@ public class BookingController {
     }
 
     private Long getUserId(Authentication authentication) {
-        String email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"))
-                .getId();
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return user.getId();
     }
 }

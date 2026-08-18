@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { register as registerApi } from '../api/axios'
+import { getGoogleAuthConfig, register as registerApi } from '../api/axios'
 import { User, Mail, Phone, Lock, UserPlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -14,6 +14,20 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [googleEnabled, setGoogleEnabled] = useState(false)
+
+  useEffect(() => {
+    getGoogleAuthConfig()
+      .then(res => setGoogleEnabled(res.data?.data === true))
+      .catch(() => setGoogleEnabled(false))
+  }, [])
+
+  const signInWithGoogle = () => {
+    let backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+    if (backendUrl === '/api') backendUrl = 'http://localhost:8080'
+    backendUrl = backendUrl.replace(/\/api\/?$/, '')
+    window.location.assign(`${backendUrl}/oauth2/authorization/google`)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -152,6 +166,18 @@ export default function Register() {
           >
             <UserPlus size={16} /> {submitting ? 'Registering...' : 'Create Account'}
           </button>
+
+          {googleEnabled && (
+            <button
+              type="button"
+              className="btn-ghost"
+              style={{ width: '100%', justifyContent: 'center' }}
+              onClick={signInWithGoogle}
+              disabled={submitting}
+            >
+              Sign up with Google
+            </button>
+          )}
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
