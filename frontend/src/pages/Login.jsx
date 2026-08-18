@@ -67,9 +67,9 @@ export default function Login() {
           login({ ...res.data.data, token })
           toast.success('Signed in with Google!')
           if (res.data.data.role === 'ADMIN') {
-            navigate('/admin')
+            navigate('/admin', { replace: true })
           } else {
-            navigate('/')
+            navigate('/', { replace: true })
           }
         }
       } catch (err) {
