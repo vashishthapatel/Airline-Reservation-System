@@ -136,7 +136,7 @@ export default function AdminDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(20, 33, 45, 0.1)" />
                   <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} />
                   <YAxis stroke="var(--text-muted)" fontSize={11} />
-                  <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid #D8E0E8', color: '#14212D' }} />
+                  <Tooltip contentStyle={{ background: '#FFFCF7', border: '1px solid #D8E0E8', color: '#14212D' }} />
                   <Area type="monotone" dataKey="Revenue" stroke="#0E3A5D" fillOpacity={1} fill="url(#colorRev)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(20, 33, 45, 0.1)" />
                   <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} />
                   <YAxis stroke="var(--text-muted)" fontSize={11} />
-                  <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid #D8E0E8', color: '#14212D' }} />
+                  <Tooltip contentStyle={{ background: '#FFFCF7', border: '1px solid #D8E0E8', color: '#14212D' }} />
                   <Bar dataKey="Bookings" fill="#B9894F" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
