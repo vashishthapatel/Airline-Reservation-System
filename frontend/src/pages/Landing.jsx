@@ -66,8 +66,8 @@ export default function Landing() {
   ]
 
   const stats = [
-    { icon: Plane, label: 'Active Flights', value: '126+', color: '#0E3A5D' },
-    { icon: Globe, label: 'Destinations', value: '12+', color: '#B9894F' },
+    { icon: Plane, label: 'Active Flights', value: '126+', color: '#C9A96E' },
+    { icon: Globe, label: 'Destinations', value: '12+', color: '#D4B87A' },
     { icon: Users, label: 'Happy Travelers', value: '50K+', color: '#22C55E' },
     { icon: ShieldCheck, label: 'Safe Booking', value: '100%', color: '#f59e0b' }
   ]
@@ -178,7 +178,7 @@ export default function Landing() {
               className="search-card"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: 'rgba(14, 58, 93, 0.1)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'rgba(var(--primary-rgb), 0.12)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Plane size={24} />
                 </div>
                 <div>
@@ -318,9 +318,9 @@ export default function Landing() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
             {[
-              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#0E3A5D' },
+              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#C9A96E' },
               { icon: ShieldCheck, title: '🛡️ Secure Payments', desc: 'Multi-channel secure transactions. Rest assured your transaction details are fully protected.', color: '#22C55E' },
-              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#B9894F' }
+              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#D4B87A' }
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
@@ -503,7 +503,7 @@ export default function Landing() {
             className="loyalty-card"
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ background: 'rgba(14, 58, 93, 0.1)', color: 'var(--primary-light)', width: '56px', height: '56px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ background: 'rgba(var(--primary-rgb), 0.12)', color: 'var(--primary-light)', width: '56px', height: '56px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               </div>
               <h2 className="gradient-text" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)' }}>SkyWay Privilege</h2>
@@ -531,7 +531,7 @@ export default function Landing() {
       <footer style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--glass-border)', padding: '3rem 0', position: 'relative', zIndex: 1 }}>
         <div className="page-container" style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-            <Plane size={24} style={{ color: '#0E3A5D' }} />
+            <Plane size={24} style={{ color: 'var(--primary-light)' }} />
             <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>SkyWay Airlines</span>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>

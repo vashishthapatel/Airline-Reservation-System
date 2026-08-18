@@ -15,7 +15,7 @@ export default function Footer() {
         position: 'absolute',
         top: 0, left: 0, right: 0,
         height: '2px',
-        background: '#B9894F'
+        background: 'var(--primary-dark)'
       }} />
 
       <div className="page-container">
