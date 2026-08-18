@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 
 export default function Landing() {
   const navigate = useNavigate()
+  const heroVideoUrl = import.meta.env.VITE_HERO_VIDEO_URL
   const [tripType, setTripType] = useState('one-way')
   const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState('')
@@ -65,8 +66,8 @@ export default function Landing() {
   ]
 
   const stats = [
-    { icon: Plane, label: 'Active Flights', value: '126+', color: '#D6C08D' },
-    { icon: Globe, label: 'Destinations', value: '12+', color: '#3B82F6' },
+    { icon: Plane, label: 'Active Flights', value: '126+', color: '#0E3A5D' },
+    { icon: Globe, label: 'Destinations', value: '12+', color: '#B9894F' },
     { icon: Users, label: 'Happy Travelers', value: '50K+', color: '#22C55E' },
     { icon: ShieldCheck, label: 'Safe Booking', value: '100%', color: '#f59e0b' }
   ]
@@ -108,6 +109,19 @@ export default function Landing() {
     >
       {/* Hero Section */}
       <header className="hero-section cinematic-hero">
+        {heroVideoUrl && (
+          <video
+            className="hero-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/airplane-bg.jpg"
+            aria-hidden="true"
+          >
+            <source src={heroVideoUrl} type="video/mp4" />
+          </video>
+        )}
         <div className="hero-bg-orbs">
           <div className="orb orb-1"></div>
           <div className="orb orb-2"></div>
@@ -164,7 +178,7 @@ export default function Landing() {
               className="search-card"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: 'rgba(214, 192, 141, 0.1)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'rgba(14, 58, 93, 0.1)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Plane size={24} />
                 </div>
                 <div>
@@ -304,9 +318,9 @@ export default function Landing() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
             {[
-              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#D6C08D' },
+              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#0E3A5D' },
               { icon: ShieldCheck, title: '🛡️ Secure Payments', desc: 'Multi-channel secure transactions. Rest assured your transaction details are fully protected.', color: '#22C55E' },
-              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#3B82F6' }
+              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#B9894F' }
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
@@ -464,7 +478,7 @@ export default function Landing() {
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.7, marginBottom: '1.5rem', fontStyle: 'italic' }}>"{review.quote}"</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#0B0B0B' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#FFFFFF' }}>
                     {review.name[0]}
                   </div>
                   <div>
@@ -489,7 +503,7 @@ export default function Landing() {
             className="loyalty-card"
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ background: 'rgba(214, 192, 141, 0.1)', color: 'var(--primary-light)', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ background: 'rgba(14, 58, 93, 0.1)', color: 'var(--primary-light)', width: '56px', height: '56px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               </div>
               <h2 className="gradient-text" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)' }}>SkyWay Privilege</h2>
@@ -517,7 +531,7 @@ export default function Landing() {
       <footer style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--glass-border)', padding: '3rem 0', position: 'relative', zIndex: 1 }}>
         <div className="page-container" style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-            <Plane size={24} style={{ color: '#D6C08D' }} />
+            <Plane size={24} style={{ color: '#0E3A5D' }} />
             <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>SkyWay Airlines</span>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
