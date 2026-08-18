@@ -24,7 +24,7 @@ export default function Navbar() {
       <div className="navbar-inner">
         {/* Logo */}
         <Link to="/" className="navbar-logo" onClick={closeMenu}>
-          <Plane size={24} style={{ color: '#D6C08D' }} />
+          <Plane size={24} style={{ color: '#E4B775' }} />
           <span className="gradient-text">SkyWay Airlines</span>
         </Link>
 
@@ -60,7 +60,7 @@ export default function Navbar() {
 
         {/* Hamburger */}
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-          {menuOpen ? <X size={22} color="#F5F5F5" /> : (
+          {menuOpen ? <X size={22} color="#FFFFFF" /> : (
             <>
               <span /><span /><span />
             </>

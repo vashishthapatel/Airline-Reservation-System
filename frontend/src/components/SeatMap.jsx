@@ -76,7 +76,7 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
       {/* Legend */}
       <div className="seat-legend">
         <div className="legend-item">
-          <div className="legend-dot" style={{ background: 'rgba(214, 192, 141, 0.2)', borderColor: 'rgba(214, 192, 141, 0.5)' }} />
+          <div className="legend-dot" style={{ background: 'rgba(14, 58, 93, 0.14)', borderColor: 'rgba(14, 58, 93, 0.5)' }} />
           Available
         </div>
         <div className="legend-item">

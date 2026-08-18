@@ -28,7 +28,7 @@ export default function EnhancedFlightCard({ flight, onSelect }) {
         <div>
           {/* Airline Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-            <div style={{ background: 'rgba(214, 192, 141, 0.1)', color: 'var(--primary-light)', width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: 'rgba(14, 58, 93, 0.1)', color: 'var(--primary-light)', width: '44px', height: '44px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Building2 size={22} />
             </div>
             <div>

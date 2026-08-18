@@ -3,21 +3,19 @@ import { Plane, Mail, Phone, MapPin } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer style={{
-      background: 'var(--bg-secondary)',
+    <footer className="site-footer" style={{
+      background: 'var(--dark-surface)',
       borderTop: '1px solid var(--glass-border)',
       padding: '3rem 0 1.5rem',
       marginTop: 'auto',
       position: 'relative'
     }}>
       {/* Gradient accent line at top */}
-      <div style={{
+      <div className="footer-accent" style={{
         position: 'absolute',
         top: 0, left: 0, right: 0,
         height: '2px',
-        background: 'linear-gradient(90deg, #D6C08D, #B8A87F, #B8A87F, #B8A87F, #D6C08D)',
-        backgroundSize: '200% 100%',
-        animation: 'gradient-shift 3s linear infinite'
+        background: '#B9894F'
       }} />
 
       <div className="page-container">
@@ -25,7 +23,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <Plane size={20} color="#D6C08D" />
+              <Plane size={20} color="#E4B775" />
               <span style={{ fontWeight: 800, fontSize: '1.1rem' }} className="gradient-text">SkyWay Airlines</span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.7 }}>
