@@ -27,6 +27,7 @@ public class BookingService {
     private final SeatRepository seatRepository;
     private final PassengerRepository passengerRepository;
     private final PaymentRepository paymentRepository;
+    private final SeatLockService seatLockService;
 
     @Transactional
     public BookingResponse createBooking(BookingRequest request, Long userId) {
@@ -35,13 +36,14 @@ public class BookingService {
 
         Flight flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
+        seatLockService.requireLocksOwnedBy(request.getFlightId(), request.getSelectedSeatIds(), userId);
 
         // Get and validate seats
         List<Seat> selectedSeats = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (Long seatId : request.getSelectedSeatIds()) {
-            Seat seat = seatRepository.findById(seatId)
+            Seat seat = seatRepository.findByIdForUpdate(seatId)
                     .orElseThrow(() -> new ResourceNotFoundException("Seat not found: " + seatId));
             if (seat.getStatus() != SeatStatus.AVAILABLE) {
                 throw new BadRequestException("Seat " + seat.getSeatNumber() + " is not available");
@@ -82,6 +84,7 @@ public class BookingService {
             passengers.add(passenger);
         }
         passengerRepository.saveAll(passengers);
+        seatLockService.consumeLocks(request.getSelectedSeatIds(), userId);
 
         return toBookingResponse(booking, passengers);
     }

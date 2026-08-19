@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getFlightSeats, getFlightById } from '../api/axios'
+import { getFlightSeats, getFlightById, lockSeats, releaseSeatLocks } from '../api/axios'
 import SeatMap from '../components/SeatMap'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { ArrowLeft, ArrowRight, Plane, Info } from 'lucide-react'
@@ -15,6 +15,9 @@ export default function SeatSelection() {
   const [loading, setLoading] = useState(true)
   const [selectedSeats, setSelectedSeats] = useState([])
   const [passengerCount, setPassengerCount] = useState(1)
+  const [lockingSeatId, setLockingSeatId] = useState(null)
+  const [lockExpiresIn, setLockExpiresIn] = useState(null)
+  const continuingRef = useRef(false)
 
   useEffect(() => {
     // Read passengers count from sessionStorage
@@ -43,24 +46,103 @@ export default function SeatSelection() {
     loadFlightAndSeats()
   }, [id])
 
-  const handleSeatClick = (seat) => {
+  useEffect(() => {
+    if (!lockExpiresIn) return
+    const timer = setInterval(() => {
+      setLockExpiresIn(current => {
+        if (!current || current <= 1) {
+          setSelectedSeats([])
+          sessionStorage.removeItem('selectedSeats')
+          toast.error('Seat lock expired. Please select your seat again.')
+          getFlightSeats(id)
+            .then(res => {
+              if (res.data?.success) setSeats(res.data.data)
+            })
+            .catch(() => {})
+          return null
+        }
+        return current - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [id, lockExpiresIn])
+
+  useEffect(() => {
+    return () => {
+      if (continuingRef.current) return
+      const storedSeats = JSON.parse(sessionStorage.getItem('selectedSeats') || '[]')
+      if (storedSeats.length === 0) return
+      releaseSeatLocks({
+        flightId: Number(id),
+        seatIds: storedSeats.map(seat => seat.id)
+      }).catch(() => {})
+    }
+  }, [id])
+
+  const refreshSeats = async () => {
+    const seatsRes = await getFlightSeats(id)
+    if (seatsRes.data?.success) {
+      setSeats(seatsRes.data.data)
+    }
+  }
+
+  const handleSeatClick = async (seat) => {
     // Check if already selected
     const isSelected = selectedSeats.some(s => s.id === seat.id)
     
     if (isSelected) {
-      // Remove it
-      setSelectedSeats(selectedSeats.filter(s => s.id !== seat.id))
+      try {
+        await releaseSeatLocks({ flightId: Number(id), seatIds: [seat.id] })
+        const nextSeats = selectedSeats.filter(s => s.id !== seat.id)
+        setSelectedSeats(nextSeats)
+        sessionStorage.setItem('selectedSeats', JSON.stringify(nextSeats))
+        if (nextSeats.length === 0) setLockExpiresIn(null)
+        await refreshSeats()
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Failed to release seat lock.')
+      }
     } else {
       // Add it if limit not reached
       if (selectedSeats.length >= passengerCount) {
         // Remove first seat and add new one
         if (passengerCount === 1) {
-          setSelectedSeats([seat])
+          const previousSeat = selectedSeats[0]
+          setLockingSeatId(seat.id)
+          try {
+            if (previousSeat) {
+              await releaseSeatLocks({ flightId: Number(id), seatIds: [previousSeat.id] })
+            }
+            const res = await lockSeats({ flightId: Number(id), seatIds: [seat.id] })
+            setSelectedSeats([seat])
+            sessionStorage.setItem('selectedSeats', JSON.stringify([seat]))
+            setLockExpiresIn(res.data?.data?.expiresInSeconds || 300)
+            toast.success(`Seat ${seat.seatNumber} locked for 5 minutes.`)
+            await refreshSeats()
+          } catch (err) {
+            toast.error(err.response?.data?.message || 'Seat is already locked by another user.')
+            await refreshSeats()
+          } finally {
+            setLockingSeatId(null)
+          }
         } else {
           toast.error(`You can only select up to ${passengerCount} seats!`)
         }
       } else {
-        setSelectedSeats([...selectedSeats, seat])
+        setLockingSeatId(seat.id)
+        try {
+          const res = await lockSeats({ flightId: Number(id), seatIds: [seat.id] })
+          const nextSeats = [...selectedSeats, seat]
+          setSelectedSeats(nextSeats)
+          sessionStorage.setItem('selectedSeats', JSON.stringify(nextSeats))
+          setLockExpiresIn(res.data?.data?.expiresInSeconds || 300)
+          toast.success(`Seat ${seat.seatNumber} locked for 5 minutes.`)
+          await refreshSeats()
+        } catch (err) {
+          toast.error(err.response?.data?.message || 'Seat is already locked by another user.')
+          await refreshSeats()
+        } finally {
+          setLockingSeatId(null)
+        }
       }
     }
   }
@@ -73,6 +155,7 @@ export default function SeatSelection() {
 
     // Save selected seats in sessionStorage
     sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats))
+    continuingRef.current = true
     navigate('/booking/passengers')
   }
 
@@ -117,11 +200,17 @@ export default function SeatSelection() {
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '2rem' }}>
             Select exactly {passengerCount} seat{passengerCount > 1 ? 's' : ''} from the cabin map below.
           </p>
+          {lockExpiresIn && selectedSeats.length > 0 && (
+            <p style={{ color: 'var(--warning)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+              Your selected seat lock expires in {Math.floor(lockExpiresIn / 60)}:{String(lockExpiresIn % 60).padStart(2, '0')}.
+            </p>
+          )}
           <SeatMap
             seats={seats}
             selectedSeats={selectedSeats}
             onSeatClick={handleSeatClick}
             maxSelection={passengerCount}
+            lockingSeatId={lockingSeatId}
           />
         </div>
 

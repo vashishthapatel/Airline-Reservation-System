@@ -76,6 +76,18 @@ public class PaymentService {
             }
         } else {
             payment.setStatus(PaymentStatus.FAILED);
+            booking.setStatus(BookingStatus.CANCELLED);
+            bookingRepository.save(booking);
+
+            List<Passenger> passengers = passengerRepository.findByBookingId(booking.getId());
+            for (Passenger passenger : passengers) {
+                if (passenger.getSeat() != null) {
+                    Seat seat = passenger.getSeat();
+                    seat.setStatus(SeatStatus.AVAILABLE);
+                    seatRepository.save(seat);
+                }
+            }
+            booking.getFlight().setAvailableSeats(booking.getFlight().getAvailableSeats() + passengers.size());
         }
 
         payment = paymentRepository.save(payment);

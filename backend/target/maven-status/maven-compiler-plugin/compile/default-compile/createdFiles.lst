@@ -1,9 +1,11 @@
 com\airline\dto\AuthResponse.class
+com\airline\service\SeatLockService$LocalSeatLock.class
 com\airline\entity\BookingStatus.class
 com\airline\dto\SeatResponse.class
 com\airline\service\AuthService.class
 com\airline\controller\HealthController.class
 com\airline\controller\AirportController.class
+com\airline\service\PendingBookingCleanupService.class
 com\airline\dto\CreateAircraftRequest.class
 com\airline\entity\Booking.class
 com\airline\service\FlightService.class
@@ -19,8 +21,11 @@ com\airline\entity\Aircraft.class
 com\airline\dto\LoginRequest.class
 com\airline\entity\SeatStatus.class
 com\airline\dto\PaymentRequest.class
+com\airline\dto\SeatLockRequest.class
 com\airline\controller\AuthController.class
 com\airline\dto\PassengerRequest.class
+com\airline\service\SeatLockService.class
+com\airline\controller\SeatLockController.class
 com\airline\exception\BadRequestException.class
 com\airline\entity\Gender.class
 com\airline\dto\BookingRequest.class
@@ -42,6 +47,7 @@ com\airline\repository\AirportRepository.class
 com\airline\dto\CreateFlightRequest.class
 com\airline\exception\ResourceNotFoundException.class
 com\airline\dto\DashboardStats.class
+com\airline\dto\SeatLockResponse.class
 com\airline\entity\Payment.class
 com\airline\controller\PaymentController.class
 com\airline\controller\FlightController.class

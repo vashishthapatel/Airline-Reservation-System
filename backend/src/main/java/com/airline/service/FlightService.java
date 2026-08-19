@@ -50,6 +50,7 @@ public class FlightService {
     private final AirportRepository airportRepository;
     private final AircraftRepository aircraftRepository;
     private final SeatRepository seatRepository;
+    private final SeatLockService seatLockService;
 
     @Transactional
     public List<FlightResponse> searchFlights(String originCode, String destinationCode, String departureDateStr, int passengers) {
@@ -343,12 +344,19 @@ public class FlightService {
     }
 
     private SeatResponse toSeatResponse(Seat seat) {
+        String status = seat.getStatus().name();
+        Long lockExpiresInSeconds = null;
+        if (seat.getStatus() == SeatStatus.AVAILABLE && seatLockService.isLocked(seat.getId())) {
+            status = SeatStatus.LOCKED.name();
+            lockExpiresInSeconds = seatLockService.getLockTtlSeconds(seat.getId());
+        }
         return new SeatResponse(
                 seat.getId(),
                 seat.getSeatNumber(),
                 seat.getSeatClass().name(),
-                seat.getStatus().name(),
-                seat.getPrice()
+                status,
+                seat.getPrice(),
+                lockExpiresInSeconds
         );
     }
 }

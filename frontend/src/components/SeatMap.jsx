@@ -1,4 +1,4 @@
-export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelection = 1 }) {
+export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelection = 1, lockingSeatId = null }) {
   const firstClass = seats.filter(s => s.seatClass === 'FIRST')
   const business   = seats.filter(s => s.seatClass === 'BUSINESS')
   const economy    = seats.filter(s => s.seatClass === 'ECONOMY')
@@ -32,9 +32,9 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
             className={getSeatClass(seat)}
             onClick={() => handleClick(seat)}
             title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
-            disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED'}
+            disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
           >
-            {seat.seatNumber.replace(/^[FBE]\d+/, '')}
+            {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
           </button>
         ))}
       </div>

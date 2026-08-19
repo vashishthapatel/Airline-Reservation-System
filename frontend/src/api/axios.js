@@ -41,6 +41,8 @@ export const register = (data) => api.post('/auth/register', data)
 export const login = (data) => api.post('/auth/login', data)
 export const getGoogleAuthConfig = () => api.get('/auth/google/config')
 export const getCurrentUser = () => api.get('/auth/me')
+export const lockSeats = (data) => api.post('/seats/locks', data)
+export const releaseSeatLocks = (data) => api.delete('/seats/locks', { data })
 
 // ── Flights ───────────────────────────────────
 export const searchFlights = (params) => api.get('/flights/search', { params })
