@@ -30,6 +30,10 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: BACKEND_URL
+        value: https://airline-reservation-system-1-zef7.onrender.com
+      - key: GOOGLE_REDIRECT_URI
+        value: https://airline-reservation-system-1-zef7.onrender.com/login/oauth2/code/google
       - key: FRONTEND_URL
         fromService:
           type: web

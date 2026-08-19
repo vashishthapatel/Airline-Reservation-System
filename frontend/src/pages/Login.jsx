@@ -135,7 +135,7 @@ export default function Login() {
 
   const signInWithGoogle = () => {
     let backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
-    if (backendUrl === '/api') backendUrl = 'http://localhost:8080'
+    if (backendUrl === '/api') backendUrl = window.location.origin
     backendUrl = backendUrl.replace(/\/api\/?$/, '')
     window.location.assign(`${backendUrl}/api/auth/google/start?mode=login`)
   }
