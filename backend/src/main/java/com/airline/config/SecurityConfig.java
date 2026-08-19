@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/google/config", "/api/auth/google/start").permitAll()
                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
+                .requestMatchers("/login", "/register", "/assets/**", "/*.jpg", "/*.png", "/*.ico", "/*.svg").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/flights/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/airports/**").permitAll()
@@ -74,6 +75,14 @@ public class SecurityConfig {
             http.oauth2Login(oauth2 -> oauth2
                 .successHandler(googleOAuth2SuccessHandler)
                 .failureHandler((request, response, exception) -> {
+                    String authMode = "login";
+                    if (request.getSession(false) != null) {
+                        Object storedMode = request.getSession(false).getAttribute("googleAuthMode");
+                        if ("signup".equals(storedMode)) {
+                            authMode = "signup";
+                        }
+                        request.getSession(false).removeAttribute("googleAuthMode");
+                    }
                     String message = exception.getMessage() == null
                             ? ""
                             : exception.getMessage().toLowerCase();
@@ -84,7 +93,7 @@ public class SecurityConfig {
                             : "oauth-failed";
                     log.error("Google OAuth failed: {}", exception.getMessage(), exception);
                     String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
-                            .path("/login")
+                            .path("signup".equals(authMode) ? "/register" : "/login")
                             .queryParam("google", "error")
                             .queryParam("reason", reason)
                             .build()

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getGoogleAuthConfig, register as registerApi } from '../api/axios'
+import { getCurrentUser, getGoogleAuthConfig, register as registerApi } from '../api/axios'
 import { User, Mail, Phone, Lock, UserPlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function Register() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -21,6 +22,63 @@ export default function Register() {
       .then(res => setGoogleEnabled(res.data?.data === true))
       .catch(() => setGoogleEnabled(false))
   }, [])
+
+  useEffect(() => {
+    const googleStatus = searchParams.get('google')
+    const googleReason = searchParams.get('reason')
+    const token = searchParams.get('token')
+    if (!googleStatus) return
+
+    if (googleStatus === 'error') {
+      toast.error(googleReason === 'unsupported-user'
+        ? 'This Google account is not allowed for this OAuth app. Add it as a test user in Google Cloud Console or publish the app for external users.'
+        : googleReason === 'oauth-disabled'
+          ? 'Google sign-up is not enabled for this app.'
+          : 'Google sign-up failed or was cancelled.')
+      setSearchParams({})
+      return
+    }
+
+    if (googleStatus === 'missing-email') {
+      toast.error('Google account did not provide an email address.')
+      setSearchParams({})
+      return
+    }
+
+    if (googleStatus === 'unverified-email') {
+      toast.error('Your Google email address is not verified.')
+      setSearchParams({})
+      return
+    }
+
+    if (googleStatus !== 'success' || !token) {
+      toast.error('Google sign-up could not be completed.')
+      setSearchParams({})
+      return
+    }
+
+    async function completeGoogleSignUp() {
+      setSubmitting(true)
+      localStorage.setItem('airline_token', token)
+      try {
+        const res = await getCurrentUser()
+        if (res.data?.success) {
+          login({ ...res.data.data, token })
+          toast.success('Signed up with Google!')
+          navigate('/', { replace: true })
+        }
+      } catch (err) {
+        localStorage.removeItem('airline_token')
+        const errorMsg = err.response?.data?.message || err.message || 'Unknown error'
+        toast.error(`Google sign-up could not be completed. Error: ${errorMsg}`)
+      } finally {
+        setSubmitting(false)
+        setSearchParams({})
+      }
+    }
+
+    completeGoogleSignUp()
+  }, [login, navigate, searchParams, setSearchParams])
 
   const signInWithGoogle = () => {
     let backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'

@@ -100,7 +100,7 @@ public class GoogleOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             log.info("JWT generated: true");
 
             String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl)
-                    .path("/login")
+                    .path("signup".equals(authMode) ? "/register" : "/login")
                     .queryParam("google", "success")
                     .queryParam("token", token)
                     .build()
