@@ -3,6 +3,9 @@ node_modules/
 dist/
 .env*.local
 
+# Local OAuth credentials
+backend/src/main/resources/application-google.properties
+
 # Java / Backend
 target/
 *.class
