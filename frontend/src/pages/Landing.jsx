@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Plane, Calendar, Users, ArrowRight, ShieldCheck, Zap, Globe, MapPin, Clock } from 'lucide-react'
+import { Plane, Calendar, Users, ArrowRight, ShieldCheck, Zap, Globe, MapPin, Clock, Loader2 } from 'lucide-react'
 import { getAirports } from '../api/axios'
 import toast from 'react-hot-toast'
 
@@ -14,21 +14,70 @@ export default function Landing() {
   const [retDate, setRetDate] = useState('')
   const [passengers, setPassengers] = useState(1)
   const [airports, setAirports] = useState([])
+  const [backendUp, setBackendUp] = useState(null) // null=checking, true=up, false=waking
+  const [wakeAttempts, setWakeAttempts] = useState(0)
 
+  // ── Backend wake check — polls /api/health until ok, shows banner while waking ──
   useEffect(() => {
-    async function fetchAirports() {
+    let cancelled = false
+    let retryTimeout
+    let delayedShowTimeout
+
+    const configuredApiUrl = import.meta.env.VITE_API_URL || '/api'
+    const apiBaseUrl = configuredApiUrl === '/api' || configuredApiUrl.endsWith('/api')
+      ? configuredApiUrl
+      : `${configuredApiUrl.replace(/\/$/, '')}/api`
+    const healthUrl = `${apiBaseUrl.replace(/\/$/, '')}/health`
+
+    const fetchAirportsNow = async () => {
       try {
         const res = await getAirports()
-        if (res.data && res.data.success) setAirports(res.data.data)
-      } catch (err) {
-        console.error('Error fetching airports:', err)
+        if (!cancelled && res.data && res.data.success) setAirports(res.data.data)
+      } catch {}
+    }
+
+    const ping = async () => {
+      try {
+        const controller = new AbortController()
+        const abortId = setTimeout(() => controller.abort(), 8000)
+        const res = await fetch(healthUrl, { signal: controller.signal, cache: 'no-store', headers: { Accept: 'application/json' } })
+        clearTimeout(abortId)
+        if (!cancelled && res.ok) {
+          clearTimeout(delayedShowTimeout)
+          setBackendUp(true)
+          fetchAirportsNow()
+          return
+        }
+        throw new Error('health not ok')
+      } catch {
+        if (cancelled) return
+        clearTimeout(delayedShowTimeout)
+        setBackendUp(false)
+        setWakeAttempts(a => a + 1)
+        retryTimeout = setTimeout(ping, 5000)
       }
     }
-    fetchAirports()
+
+    // If backend hasn't responded in 1.8s, assume it's sleeping and show banner
+    delayedShowTimeout = setTimeout(() => {
+      if (!cancelled) setBackendUp(prev => (prev === null ? false : prev))
+    }, 1800)
+
+    ping()
+
+    return () => {
+      cancelled = true
+      clearTimeout(retryTimeout)
+      clearTimeout(delayedShowTimeout)
+    }
   }, [])
 
   const handleSearch = (e) => {
     e.preventDefault()
+    if (backendUp === false) {
+      toast.error('Backend is still waking up — please wait a moment and try again.')
+      return
+    }
     if (!origin || !destination || !depDate) {
       toast.error('Please fill in Origin, Destination, and Departure Date!')
       return
@@ -88,6 +137,103 @@ export default function Landing() {
         <div className="hero-bg-orbs" aria-hidden="true" />
 
         <div className="hero-content">
+          {/* Backend waking banner — shows until /api/health is ok, then disappears */}
+          <AnimatePresence>
+            {backendUp === false && (
+              <motion.div
+                key="backend-wake-banner"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                role="status"
+                aria-live="polite"
+                style={{ marginBottom: '1.1rem' }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.9rem',
+                    background: '#FFFFFF',
+                    border: '0.5px solid #E8E0D0',
+                    borderLeft: '3px solid #C9A86A',
+                    borderRadius: 14,
+                    padding: '0.85rem 1rem',
+                    boxShadow: '0 1px 2px rgba(26,30,38,0.05), 0 10px 28px rgba(26,30,38,0.06)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 10,
+                      background: 'rgba(201,168,106,0.12)',
+                      border: '0.5px solid rgba(201,168,106,0.18)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Loader2 size={16} style={{ color: '#A68A56', animation: 'spin 0.85s linear infinite' }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 750, fontSize: '0.88rem', color: '#1A1E26', letterSpacing: '-0.015em', lineHeight: 1.3 }}>
+                      Backend is starting — please wait 1–2 minutes
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: '#6B7280', lineHeight: 1.55, marginTop: 2 }}>
+                      The server sleeps after inactivity on the free tier and is waking up now. Search will be ready shortly — no need to refresh.
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: 'JetBrains Mono, monospace',
+                        fontSize: '0.62rem',
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        color: '#9AA0AE',
+                        marginTop: 5,
+                      }}
+                    >
+                      Checking again in 5s{wakeAttempts > 0 ? ` · Attempt ${wakeAttempts}` : ''}
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      fontFamily: 'JetBrains Mono, monospace',
+                      fontSize: '0.62rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: '#A68A56',
+                      background: 'rgba(201,168,106,0.10)',
+                      border: '0.5px solid rgba(201,168,106,0.18)',
+                      padding: '5px 9px',
+                      borderRadius: 999,
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: 99,
+                        background: '#C9A86A',
+                        display: 'inline-block',
+                        boxShadow: '0 0 0 5px rgba(201,168,106,0.14)',
+                      }}
+                    />
+                    Waking…
+                  </span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.6rem', alignItems: 'center' }}>
             {/* Left */}
             <motion.div variants={itemVariants} className="hero-text">
@@ -152,7 +298,7 @@ export default function Landing() {
             </motion.div>
 
             {/* Search Card — the jewel */}
-            <motion.div id="search-section" variants={itemVariants} className="search-card">
+            <motion.div id="search-section" variants={itemVariants} className="search-card" style={{ opacity: backendUp === false ? 0.92 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: 12,
@@ -168,10 +314,10 @@ export default function Landing() {
                 </div>
                 <span style={{
                   marginLeft: 'auto', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem',
-                  letterSpacing: '0.08em', textTransform: 'uppercase', color: '#A68A56',
-                  background: 'rgba(201,168,106,0.10)', border: '0.5px solid rgba(201,168,106,0.18)',
+                  letterSpacing: '0.08em', textTransform: 'uppercase', color: backendUp === false ? '#9AA0AE' : '#A68A56',
+                  background: backendUp === false ? 'rgba(26,30,38,0.06)' : 'rgba(201,168,106,0.10)', border: backendUp === false ? '0.5px solid #E8E0D0' : '0.5px solid rgba(201,168,106,0.18)',
                   padding: '4px 8px', borderRadius: 999
-                }}>Live search</span>
+                }}>{backendUp === false ? 'Waking…' : 'Live search'}</span>
               </div>
 
               <form onSubmit={handleSearch}>
@@ -223,12 +369,19 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <motion.button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1.1rem', padding: '0.95rem' }} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                  <Plane size={17} /> Search Flights
+                <motion.button
+                  type="submit"
+                  className="btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', marginTop: '1.1rem', padding: '0.95rem', opacity: backendUp === false ? 0.65 : 1 }}
+                  whileHover={{ scale: backendUp === false ? 1 : 1.01 }}
+                  whileTap={{ scale: backendUp === false ? 1 : 0.99 }}
+                  title={backendUp === false ? 'Backend is waking up — please wait' : undefined}
+                >
+                  {backendUp === false ? <><Loader2 size={17} style={{ animation: 'spin 0.85s linear infinite' }} /> Waking server…</> : <><Plane size={17} /> Search Flights</>}
                 </motion.button>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.85rem', color: '#9AA0AE', fontSize: '0.76rem' }}>
-                  <ShieldCheck size={13} /> Secure · Instant confirmation · No hidden fees
+                  <ShieldCheck size={13} /> {backendUp === false ? 'Search will be ready once the server is up' : 'Secure · Instant confirmation · No hidden fees'}
                 </div>
               </form>
             </motion.div>
@@ -421,7 +574,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Footer — MAISON dark —─ */}
+      {/* ── Footer — MAISON dark ── */}
       <footer style={{ background: '#1A1E26', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '2.4rem 0', position: 'relative', zIndex: 1 }}>
         <div className="page-container" style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
