@@ -233,7 +233,7 @@ export default function Register() {
             style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}
             disabled={submitting}
           >
-            <UserPlus size={16} /> {submitting ? 'Registering...' : 'Create Account'}
+            <UserPlus size={16} /> {submitting ? 'Signing up...' : 'Sign Up'}
           </button>
 
           {googleEnabled && (
