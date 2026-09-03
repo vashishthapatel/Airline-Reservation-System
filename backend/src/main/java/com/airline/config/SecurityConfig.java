@@ -116,6 +116,7 @@ public class SecurityConfig {
         }
         configuration.setAllowedOriginPatterns(List.of(
                 frontendOrigin,
+                "https://*.vercel.app",
                 "https://*.onrender.com",
                 "http://localhost:*",
                 "http://127.0.0.1:*"
