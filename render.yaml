@@ -26,6 +26,8 @@ services:
         value: update
       - key: SPRING_PROFILES_ACTIVE
         value: google
+      - key: GOOGLE_AUTH_ENABLED
+        value: true
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
