@@ -7,7 +7,6 @@ import toast from 'react-hot-toast'
 
 export default function Landing() {
   const navigate = useNavigate()
-  const heroVideoUrl = import.meta.env.VITE_HERO_VIDEO_URL
   const [tripType, setTripType] = useState('one-way')
   const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState('')
@@ -108,20 +107,7 @@ export default function Landing() {
       variants={containerVariants}
     >
       {/* Hero Section */}
-      <header className="hero-section cinematic-hero">
-        {heroVideoUrl && (
-          <video
-            className="hero-video"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/hero-background.jpg"
-            aria-hidden="true"
-          >
-            <source src={heroVideoUrl} type="video/mp4" />
-          </video>
-        )}
+      <header className="hero-section">
         <div className="hero-bg-orbs">
           <div className="orb orb-1"></div>
           <div className="orb orb-2"></div>
