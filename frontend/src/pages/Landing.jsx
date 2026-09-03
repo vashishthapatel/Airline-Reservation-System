@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Plane, Calendar, Users, ArrowRight, ShieldCheck, Zap, Globe, MapPin, TrendingUp, Clock, Star, BarChart3 } from 'lucide-react'
+import { Plane, Calendar, Users, ArrowRight, ShieldCheck, Zap, Globe, MapPin, Clock } from 'lucide-react'
 import { getAirports } from '../api/axios'
 import toast from 'react-hot-toast'
 
@@ -14,20 +14,14 @@ export default function Landing() {
   const [retDate, setRetDate] = useState('')
   const [passengers, setPassengers] = useState(1)
   const [airports, setAirports] = useState([])
-  const [loadingAirports, setLoadingAirports] = useState(false)
 
   useEffect(() => {
     async function fetchAirports() {
-      setLoadingAirports(true)
       try {
         const res = await getAirports()
-        if (res.data && res.data.success) {
-          setAirports(res.data.data)
-        }
+        if (res.data && res.data.success) setAirports(res.data.data)
       } catch (err) {
         console.error('Error fetching airports:', err)
-      } finally {
-        setLoadingAirports(false)
       }
     }
     fetchAirports()
@@ -43,7 +37,6 @@ export default function Landing() {
       toast.error('Origin and Destination cannot be the same!')
       return
     }
-    
     const queryParams = new URLSearchParams({
       originCode: origin,
       destinationCode: destination,
@@ -51,7 +44,6 @@ export default function Landing() {
       passengers: passengers.toString(),
       tripType
     })
-    
     navigate(`/flights/search?${queryParams.toString()}`)
   }
 
@@ -65,10 +57,10 @@ export default function Landing() {
   ]
 
   const stats = [
-    { icon: Plane, label: 'Active Flights', value: '126+', color: '#C9A96E' },
-    { icon: Globe, label: 'Destinations', value: '12+', color: '#D4B87A' },
-    { icon: Users, label: 'Happy Travelers', value: '50K+', color: '#22C55E' },
-    { icon: ShieldCheck, label: 'Safe Booking', value: '100%', color: '#f59e0b' }
+    { icon: Plane, label: 'Active Flights', value: '126+' },
+    { icon: Globe, label: 'Destinations', value: '12+' },
+    { icon: Users, label: 'Happy Travelers', value: '50K+' },
+    { icon: ShieldCheck, label: 'Safe Booking', value: '100%' }
   ]
 
   const selectPopularRoute = (route) => {
@@ -82,148 +74,128 @@ export default function Landing() {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.12 } }
   }
-
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
-    }
+    hidden: { opacity: 0, y: 18 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } }
   }
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      {/* Hero Section */}
+    <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+      {/* ── HERO — MAISON ── */}
       <header className="hero-section">
-        <div className="hero-bg-orbs">
-          <div className="orb orb-1"></div>
-          <div className="orb orb-2"></div>
-          <div className="orb orb-3"></div>
-        </div>
+        <div className="hero-bg-orbs" aria-hidden="true" />
 
         <div className="hero-content">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', alignItems: 'center' }}>
-            {/* Hero Left Text */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.6rem', alignItems: 'center' }}>
+            {/* Left */}
             <motion.div variants={itemVariants} className="hero-text">
               <span className="hero-badge">
-                <Plane size={14} /> Fly high with SkyWay
+                <span style={{ width: 6, height: 6, borderRadius: 99, background: '#C9A86A', display: 'inline-block' }} />
+                SkyWay — Quiet Luxury Aviation
               </span>
+
               <h1 className="hero-title">
-                Your Journey <br />
-                <span className="gradient-text">Begins Here</span>
+                Your Journey
+                <br />
+                <span className="accent">Begins Here</span>
               </h1>
+
               <p className="hero-subtitle">
-                Explore the world with seamless flight search, premium seat selection, secure payment processing, and instant booking confirmation.
+                Hand-pressed paper, brushed brass, and midnight precision — search 12+ destinations with seamless seat selection and instant confirmation.
               </p>
-              
-              {/* Stats Row */}
-              <div className="hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+
+              <div className="hero-rule" />
+
+              <div className="hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1.5rem' }}>
                 {stats.map((stat, idx) => (
-                  <motion.div
+                  <div
                     key={idx}
-                    variants={itemVariants}
-                className="destination-card"
-                    style={{ padding: '1.25rem', textAlign: 'center' }}
+                    style={{
+                      background: '#FFFFFF',
+                      border: '0.5px solid #E8E0D0',
+                      borderRadius: 14,
+                      padding: '1rem 0.9rem',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.85rem',
+                      boxShadow: '0 1px 2px rgba(26,30,38,0.04), 0 6px 18px rgba(26,30,38,0.04)'
+                    }}
                   >
-                    <div style={{ background: `${stat.color}15`, color: stat.color, width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
-                      <stat.icon size={20} />
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      background: idx % 2 === 0 ? 'rgba(201,168,106,0.11)' : 'rgba(27,42,74,0.07)',
+                      color: idx % 2 === 0 ? '#A68A56' : '#1B2A4A',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                    }}>
+                      <stat.icon size={16} />
                     </div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{stat.value}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontWeight: 500 }}>{stat.label}</div>
-                  </motion.div>
+                    <div>
+                      <div style={{ fontFamily: 'Instrument Serif, Georgia, serif', fontSize: '1.35rem', fontWeight: 400, lineHeight: 1, color: '#1A1E26', letterSpacing: '-0.02em' }}>{stat.value}</div>
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9AA0AE', marginTop: 3, fontWeight: 600 }}>{stat.label}</div>
+                    </div>
+                  </div>
                 ))}
               </div>
 
-              <motion.div variants={itemVariants} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '0.7rem', flexWrap: 'wrap', alignItems: 'center' }}>
                 <a href="#search-section" className="btn-primary">
-                  Book Now <ArrowRight size={16} />
+                  Book Now <ArrowRight size={15} />
                 </a>
-                <a href="#routes" className="btn-ghost">
-                  View Routes
-                </a>
-              </motion.div>
+                <a href="#routes" className="btn-ghost">View Routes</a>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9AA0AE', marginLeft: '0.2rem' }}>
+                  No fees · Instant ticket
+                </span>
+              </div>
             </motion.div>
 
-            {/* Flight Search Card */}
-            <motion.div
-              id="search-section"
-              variants={itemVariants}
-              className="search-card"
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: 'rgba(var(--primary-rgb), 0.12)', color: 'var(--primary-light)', width: '48px', height: '48px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Plane size={24} />
+            {/* Search Card — the jewel */}
+            <motion.div id="search-section" variants={itemVariants} className="search-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12,
+                  background: 'rgba(201,168,106,0.12)', color: '#A68A56',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  border: '0.5px solid rgba(201,168,106,0.18)'
+                }}>
+                  <Plane size={20} />
                 </div>
                 <div>
-                  <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>Book Flight Tickets</h2>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Find the best deals across 12+ destinations</p>
+                  <div style={{ fontFamily: 'Instrument Serif, Georgia, serif', fontSize: '1.35rem', lineHeight: 1, color: '#1A1E26' }}>Book Flight Tickets</div>
+                  <div style={{ fontSize: '0.82rem', color: '#9AA0AE', marginTop: 2 }}>Find the best deals across 12+ destinations</div>
                 </div>
+                <span style={{
+                  marginLeft: 'auto', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem',
+                  letterSpacing: '0.08em', textTransform: 'uppercase', color: '#A68A56',
+                  background: 'rgba(201,168,106,0.10)', border: '0.5px solid rgba(201,168,106,0.18)',
+                  padding: '4px 8px', borderRadius: 999
+                }}>Live search</span>
               </div>
-              
+
               <form onSubmit={handleSearch}>
-                {/* Trip Type Tabs */}
                 <div className="search-tabs">
-                  <button
-                    type="button"
-                    className={`search-tab ${tripType === 'one-way' ? 'active' : ''}`}
-                    onClick={() => setTripType('one-way')}
-                  >
-                    One Way
-                  </button>
-                  <button
-                    type="button"
-                    className={`search-tab ${tripType === 'round-trip' ? 'active' : ''}`}
-                    onClick={() => setTripType('round-trip')}
-                  >
-                    Round Trip
-                  </button>
+                  <button type="button" className={`search-tab ${tripType === 'one-way' ? 'active' : ''}`} onClick={() => setTripType('one-way')}>One Way</button>
+                  <button type="button" className={`search-tab ${tripType === 'round-trip' ? 'active' : ''}`} onClick={() => setTripType('round-trip')}>Round Trip</button>
                 </div>
 
-                {/* Input Fields Grid */}
                 <div className="search-grid">
                   <div className="search-field">
-                    <label><MapPin size={14} /> From</label>
-                    <select
-                      className="input-field"
-                      value={origin}
-                      onChange={(e) => setOrigin(e.target.value)}
-                      required
-                    >
+                    <label><MapPin size={12} /> From</label>
+                    <select className="input-field" value={origin} onChange={(e) => setOrigin(e.target.value)} required>
                       <option value="">Select Origin</option>
                       {airports.map(ap => (
-                        <option key={ap.id} value={ap.iataCode}>
-                          {ap.city} ({ap.iataCode}) - {ap.name}
-                        </option>
+                        <option key={ap.id} value={ap.iataCode}>{ap.city} ({ap.iataCode}) — {ap.name}</option>
                       ))}
                     </select>
                   </div>
-
                   <div className="search-field">
-                    <label><MapPin size={14} /> To</label>
-                    <select
-                      className="input-field"
-                      value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
-                      required
-                    >
+                    <label><MapPin size={12} /> To</label>
+                    <select className="input-field" value={destination} onChange={(e) => setDestination(e.target.value)} required>
                       <option value="">Select Destination</option>
                       {airports.map(ap => (
-                        <option key={ap.id} value={ap.iataCode}>
-                          {ap.city} ({ap.iataCode}) - {ap.name}
-                        </option>
+                        <option key={ap.id} value={ap.iataCode}>{ap.city} ({ap.iataCode}) — {ap.name}</option>
                       ))}
                     </select>
                   </div>
@@ -231,39 +203,19 @@ export default function Landing() {
 
                 <div className="search-grid">
                   <div className="search-field">
-                    <label><Calendar size={14} /> Departure Date</label>
-                    <input
-                      type="date"
-                      className="input-field"
-                      value={depDate}
-                      onChange={(e) => setDepDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      required
-                    />
+                    <label><Calendar size={12} /> Departure</label>
+                    <input type="date" className="input-field" value={depDate} onChange={(e) => setDepDate(e.target.value)} min={new Date().toISOString().split('T')[0]} required />
                   </div>
-
                   <div className="search-field">
-                    <label><Calendar size={14} /> Return Date</label>
-                    <input
-                      type="date"
-                      className="input-field"
-                      value={retDate}
-                      onChange={(e) => setRetDate(e.target.value)}
-                      min={depDate || new Date().toISOString().split('T')[0]}
-                      disabled={tripType === 'one-way'}
-                      required={tripType === 'round-trip'}
-                    />
+                    <label><Calendar size={12} /> Return</label>
+                    <input type="date" className="input-field" value={retDate} onChange={(e) => setRetDate(e.target.value)} min={depDate || new Date().toISOString().split('T')[0]} disabled={tripType === 'one-way'} required={tripType === 'round-trip'} />
                   </div>
                 </div>
 
                 <div className="search-grid" style={{ gridTemplateColumns: '1fr' }}>
                   <div className="search-field">
-                    <label><Users size={14} /> Passengers</label>
-                    <select
-                      className="input-field"
-                      value={passengers}
-                      onChange={(e) => setPassengers(parseInt(e.target.value))}
-                    >
+                    <label><Users size={12} /> Passengers</label>
+                    <select className="input-field" value={passengers} onChange={(e) => setPassengers(parseInt(e.target.value))}>
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
                         <option key={n} value={n}>{n} Passenger{n > 1 ? 's' : ''}</option>
                       ))}
@@ -271,89 +223,75 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <motion.button
-                  type="submit"
-                  className="btn-primary"
-                  style={{ width: '100%', justifyContent: 'center', marginTop: '1.5rem', padding: '1rem' }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Plane size={18} /> Search Flights
+                <motion.button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1.1rem', padding: '0.95rem' }} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  <Plane size={17} /> Search Flights
                 </motion.button>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.85rem', color: '#9AA0AE', fontSize: '0.76rem' }}>
+                  <ShieldCheck size={13} /> Secure · Instant confirmation · No hidden fees
+                </div>
               </form>
             </motion.div>
           </div>
         </div>
       </header>
 
-      {/* Features Section */}
-      <section className="section-padding" style={{ background: 'var(--bg-secondary)', position: 'relative', zIndex: 1 }}>
+      {/* ── Why SkyWay ── */}
+      <section className="section-padding" style={{ background: '#FFFFFF', borderTop: '0.5px solid #E8E0D0', borderBottom: '0.5px solid #E8E0D0', position: 'relative', zIndex: 1 }}>
         <div className="page-container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: '4rem' }}
-          >
-            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>Why Choose SkyWay?</h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
-              We provide the best booking experience, flight schedules, and premium service to make your trip unforgettable.
+          <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} style={{ textAlign: 'center', marginBottom: '2.6rem' }}>
+            <div className="eyebrow" style={{ justifyContent: 'center', marginBottom: '0.7rem' }}>
+              <span style={{ width: 22, height: 1, background: '#C9A86A', opacity: 0.9 }} /> Why SkyWay <span style={{ width: 22, height: 1, background: '#C9A86A', opacity: 0.9 }} />
+            </div>
+            <h2 style={{ marginBottom: '0.6rem' }}>Quiet luxury, <em className="serif-italic" style={{ color: '#A68A56' }}>on every mile</em></h2>
+            <p style={{ color: '#6B7280', maxWidth: 640, margin: '0 auto', fontSize: '0.98rem', lineHeight: 1.7 }}>
+              No dark patterns. No clutter. Just paper, brass, and precision — the booking experience Business travelers expect.
             </p>
           </motion.div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.1rem' }}>
             {[
-              { icon: Zap, title: '⚡ Instant Booking', desc: 'Get your digital ticket immediately after payment, with automatic seat updates.', color: '#C9A96E' },
-              { icon: ShieldCheck, title: '🛡️ Secure Payments', desc: 'Multi-channel secure transactions. Rest assured your transaction details are fully protected.', color: '#22C55E' },
-              { icon: Globe, title: '✈️ 200+ Destinations', desc: 'Fly anywhere around the world. Connect with all major international and domestic routes.', color: '#D4B87A' }
+              { icon: Zap, kicker: 'Instant', title: 'Ticket in seconds', desc: 'Digital ticket the moment you pay — with live seat map updates.', tint: 'brass' },
+              { icon: ShieldCheck, kicker: 'Secure', title: 'Payments you trust', desc: 'Bank-grade encryption. Your details never leave the paper.', tint: 'midnight' },
+              { icon: Globe, kicker: 'Global', title: '12+ destinations', desc: 'Domestic and international — one search, every route.', tint: 'brass' }
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className="glass-card"
-                style={{ padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
+                initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.08 }}
+                style={{
+                  background: '#FFFFFF', border: '0.5px solid #E8E0D0', borderRadius: 16, padding: '1.6rem 1.5rem',
+                  boxShadow: '0 1px 2px rgba(26,30,38,0.04), 0 8px 24px rgba(26,30,38,0.04)', position: 'relative', overflow: 'hidden'
+                }}
               >
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: `linear-gradient(90deg, ${feature.color}, transparent)` }}></div>
-                <div style={{ background: `${feature.color}15`, color: feature.color, width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                  <feature.icon size={28} />
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: feature.tint === 'brass' ? 'linear-gradient(90deg, transparent, rgba(201,168,106,0.22), transparent)' : 'linear-gradient(90deg, transparent, rgba(27,42,74,0.14), transparent)' }} />
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem',
+                  background: feature.tint === 'brass' ? 'rgba(201,168,106,0.10)' : 'rgba(27,42,74,0.06)',
+                  color: feature.tint === 'brass' ? '#A68A56' : '#1B2A4A', border: '0.5px solid rgba(0,0,0,0.04)'
+                }}>
+                  <feature.icon size={18} />
                 </div>
-                <h3 style={{ marginBottom: '0.75rem', fontSize: '1.25rem', fontWeight: 700 }}>{feature.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                  {feature.desc}
-                </p>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.10em', textTransform: 'uppercase', color: feature.tint === 'brass' ? '#A68A56' : '#6B7280', fontWeight: 700, marginBottom: '0.3rem' }}>{feature.kicker}</div>
+                <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.08rem', fontWeight: 750, letterSpacing: '-0.015em', color: '#1A1E26', marginBottom: '0.4rem' }}>{feature.title}</h3>
+                <p style={{ color: '#6B7280', fontSize: '0.9rem', lineHeight: 1.65 }}>{feature.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it Works Section */}
-      <section id="how-it-works" className="section-padding" style={{ position: 'relative', zIndex: 1 }}>
+      {/* ── How it Works ── */}
+      <section id="how-it-works" className="section-padding" style={{ position: 'relative', zIndex: 1, background: '#FFFBF5' }}>
         <div className="page-container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: '4rem' }}
-          >
-            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>How It Works</h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
-              Book your next flight in just 4 simple steps.
-            </p>
-          </motion.div>
+          <div style={{ textAlign: 'center', marginBottom: '1.8rem' }}>
+            <div className="eyebrow" style={{ justifyContent: 'center', marginBottom: '0.6rem' }}>The flow</div>
+            <h2 style={{ marginBottom: '0.4rem' }}>Four steps. <em className="serif-italic" style={{ color: '#A68A56' }}>No friction.</em></h2>
+            <p style={{ color: '#6B7280', maxWidth: 560, margin: '0 auto', fontSize: '0.95rem' }}>From search to boarding pass — designed to feel inevitable.</p>
+          </div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="steps-progress"
-            style={{ marginBottom: '0' }}
+            initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="steps-progress" style={{ marginBottom: 0 }}
           >
             {['Search Flights', 'Select Seats', 'Passenger Info', 'Secure Pay'].map((step, idx) => (
               <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
@@ -361,66 +299,57 @@ export default function Landing() {
                   <span className="step-number">{idx + 1}</span>
                   <span className="step-label">{step}</span>
                 </div>
-                {idx < 3 && <div className="step-connector done"></div>}
+                {idx < 3 && <div className="step-connector done" />}
               </div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Popular Routes Section */}
-      <section id="routes" className="section-padding" style={{ background: 'var(--bg-secondary)', position: 'relative', zIndex: 1 }}>
+      {/* ── Popular Routes ── */}
+      <section id="routes" className="section-padding" style={{ background: '#FFFFFF', borderTop: '0.5px solid #E8E0D0', position: 'relative', zIndex: 1 }}>
         <div className="page-container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: '4rem' }}
-          >
-            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>Popular Flight Routes</h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
-              Discover deals on our most frequented flights. Click any card to set your route automatically.
-            </p>
-          </motion.div>
+          <div style={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.6rem' }}>
+            <div>
+              <div className="eyebrow" style={{ marginBottom: '0.5rem' }}>Curated routes</div>
+              <h2 style={{ marginBottom: '0.35rem' }}>Popular flights</h2>
+              <p style={{ color: '#6B7280', fontSize: '0.92rem' }}>Tap any card — it fills your search automatically.</p>
+            </div>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.68rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9AA0AE' }}>
+              Prices from · per traveler
+            </span>
+          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
             {popularRoutes.map((route, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className="glass-card"
-                style={{ 
-                  padding: '1.5rem', 
-                  cursor: 'pointer',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
+                initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.06 }}
                 onClick={() => selectPopularRoute(route)}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                whileHover={{ y: -3 }}
+                style={{
+                  background: '#FFFFFF', border: '0.5px solid #E8E0D0', borderRadius: 16, padding: '1.25rem',
+                  cursor: 'pointer', position: 'relative', overflow: 'hidden',
+                  boxShadow: '0 1px 2px rgba(26,30,38,0.04), 0 8px 24px rgba(26,30,38,0.04)'
+                }}
               >
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'var(--gradient-primary)' }}></div>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,106,0.20), transparent)' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>From</div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>{route.fromCity} ({route.from})</h3>
+                    <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9AA0AE', marginBottom: 3 }}>From</div>
+                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.02rem', fontWeight: 750, letterSpacing: '-0.015em', color: '#1A1E26' }}>{route.fromCity} <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, color: '#6B7280' }}>({route.from})</span></div>
                   </div>
-                  <div style={{ padding: '0 1rem' }}>
-                    <Plane size={20} style={{ color: 'var(--primary-light)' }} />
+                  <div style={{ width: 36, height: 36, borderRadius: 999, background: 'rgba(201,168,106,0.10)', border: '0.5px solid rgba(201,168,106,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A68A56' }}>
+                    <Plane size={15} />
                   </div>
                   <div style={{ flex: 1, textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>To</div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>{route.toCity} ({route.to})</h3>
+                    <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9AA0AE', marginBottom: 3 }}>To</div>
+                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.02rem', fontWeight: 750, letterSpacing: '-0.015em', color: '#1A1E26' }}>{route.toCity} <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, color: '#6B7280' }}>({route.to})</span></div>
                   </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Clock size={14} /> Direct Flight
-                  </span>
-                  <span style={{ fontWeight: 800, color: 'var(--primary-light)', fontSize: '1.1rem' }}>{route.price}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.85rem', borderTop: '0.5px solid #F5F0E8' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#6B7280', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Clock size={13} /> Direct</span>
+                  <span style={{ fontFamily: 'Instrument Serif, Georgia, serif', fontSize: '1.15rem', color: '#1A1E26' }}>{route.price}</span>
                 </div>
               </motion.div>
             ))}
@@ -428,48 +357,30 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="premium-section-alt">
+      {/* ── Testimonials ── */}
+      <section className="premium-section-alt" style={{ background: '#FFFBF5' }}>
         <div className="page-container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: '4rem' }}
-          >
-            <h2 className="gradient-text" style={{ marginBottom: '1rem', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>What Travelers Say</h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1rem' }}>
-              Real stories from real adventurers who chose SkyWay.
-            </p>
-          </motion.div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.8rem' }}>
+            <div className="eyebrow" style={{ justifyContent: 'center', marginBottom: '0.6rem' }}>Travelers</div>
+            <h2 style={{ marginBottom: '0.4rem' }}>What travelers <em className="serif-italic" style={{ color: '#A68A56' }}>remember</em></h2>
+            <p style={{ color: '#6B7280', maxWidth: 560, margin: '0 auto', fontSize: '0.95rem' }}>Not reviews. Receipts — from people who actually boarded.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
             {[
-              { name: 'Ananya Sharma', role: 'Business Traveler', quote: 'SkyWay made my Delhi to London journey feel effortless. The seat selection and premium lounge access were exceptional.' },
-              { name: 'Rahul Mehta', role: 'Adventure Seeker', quote: 'Booked a last-minute ticket to Bali and the process was seamless. The app is incredibly intuitive.' },
-              { name: 'Priya Kapoor', role: 'Frequent Flyer', quote: 'The loyalty program rewards are genuine. I have upgraded multiple times without any hassle.' }
+              { name: 'Ananya Sharma', role: 'Business Traveler · DEL → LON', quote: 'The seat map is the best I have used — picked 4A in one tap. Lounge access coded to my ticket without a call.' },
+              { name: 'Rahul Mehta', role: 'Adventure Seeker · BOM → DPS', quote: 'Last-minute to Bali. Booked at 11pm, ticket in my inbox before I closed the tab.' },
+              { name: 'Priya Kapoor', role: 'Frequent Flyer · SkyWay Privilege Gold', quote: 'Upgrades that actually clear. No theatre — the miles post and the cabin changes.' }
             ].map((review, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className="testimonial-card"
-              >
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                  {[1,2,3,4,5].map(star => (
-                    <span key={star} style={{ color: 'var(--primary)', fontSize: '1rem' }}>★</span>
-                  ))}
+              <motion.div key={idx} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.07 }} className="testimonial-card">
+                <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '0.85rem' }}>
+                  {[1, 2, 3, 4, 5].map(s => <span key={s} style={{ color: '#C9A86A', fontSize: '0.9rem' }}>★</span>)}
                 </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.7, marginBottom: '1.5rem', fontStyle: 'italic' }}>"{review.quote}"</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#FFFFFF' }}>
-                    {review.name[0]}
-                  </div>
+                <p style={{ color: '#2A303E', fontSize: '0.93rem', lineHeight: 1.7, marginBottom: '1.1rem', fontStyle: 'italic' }}>"{review.quote}"</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', paddingTop: '0.85rem', borderTop: '0.5px solid #F5F0E8' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1A1E26', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 750, color: '#FFFBF5', fontSize: '0.82rem' }}>{review.name[0]}</div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{review.name}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{review.role}</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1A1E26', letterSpacing: '-0.01em' }}>{review.name}</div>
+                    <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.66rem', letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9AA0AE' }}>{review.role}</div>
                   </div>
                 </div>
               </motion.div>
@@ -478,34 +389,31 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Loyalty Program */}
-      <section className="premium-section">
+      {/* ── Privilege ── */}
+      <section className="premium-section" style={{ background: '#FFFFFF', borderTop: '0.5px solid #E8E0D0' }}>
         <div className="page-container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="loyalty-card"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ background: 'rgba(var(--primary-rgb), 0.12)', color: 'var(--primary-light)', width: '56px', height: '56px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </div>
-              <h2 className="gradient-text" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)' }}>SkyWay Privilege</h2>
+          <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="loyalty-card">
+            <div style={{
+              width: 48, height: 48, borderRadius: 14, margin: '0 auto 1rem',
+              background: 'rgba(201,168,106,0.11)', color: '#A68A56', border: '0.5px solid rgba(201,168,106,0.18)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
             </div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '700px', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
-              Earn miles on every flight. Unlock complimentary upgrades, priority boarding, lounge access, and exclusive member-only fares.
+            <div className="eyebrow" style={{ justifyContent: 'center', marginBottom: '0.55rem' }}>Membership</div>
+            <h2 style={{ marginBottom: '0.6rem' }}>SkyWay <em className="serif-italic" style={{ color: '#A68A56' }}>Privilege</em></h2>
+            <p style={{ color: '#6B7280', fontSize: '0.98rem', maxWidth: 680, margin: '0 auto 1.6rem', lineHeight: 1.7 }}>
+              Earn miles on every rupee. Unlock upgrades, priority lanes, lounge access, and member-only fares — with no expiry theatre.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.4rem', textAlign: 'left', maxWidth: 760, margin: '0 auto' }}>
               {[
-                { title: 'Miles', desc: 'Earn miles on every rupee spent with us and redeem for free flights.' },
-                { title: 'Upgrades', desc: 'Complimentary cabin upgrades when available for elite members.' },
-                { title: 'Priority', desc: 'Skip the queue with dedicated check-in and boarding lanes.' }
-              ].map((benefit, idx) => (
-                <div key={idx} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>{benefit.title}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>{benefit.desc}</div>
+                { title: 'Miles', desc: 'Earn on every rupee. Redeem for flights — not vouchers.' },
+                { title: 'Upgrades', desc: 'Complimentary cabin moves when space opens. Automatic.' },
+                { title: 'Priority', desc: 'Dedicated check-in and boarding. Walk past the queue.' }
+              ].map((b, i) => (
+                <div key={i} style={{ background: '#FFFBF5', border: '0.5px solid #F0EAE0', borderRadius: 14, padding: '1rem 1.1rem' }}>
+                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.66rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#A68A56', fontWeight: 700, marginBottom: '0.35rem' }}>{b.title}</div>
+                  <div style={{ color: '#6B7280', fontSize: '0.88rem', lineHeight: 1.6 }}>{b.desc}</div>
                 </div>
               ))}
             </div>
@@ -513,19 +421,16 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--glass-border)', padding: '3rem 0', position: 'relative', zIndex: 1 }}>
+      {/* ── Footer — MAISON dark —─ */}
+      <footer style={{ background: '#1A1E26', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '2.4rem 0', position: 'relative', zIndex: 1 }}>
         <div className="page-container" style={{ textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-            <Plane size={24} style={{ color: 'var(--primary-light)' }} />
-            <span style={{ fontSize: '1.25rem', fontWeight: 800 }}>SkyWay Airlines</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+            <Plane size={18} style={{ color: '#C9A86A' }} />
+            <span style={{ fontFamily: 'Instrument Serif, Georgia, serif', fontSize: '1.25rem', fontWeight: 400, color: '#FFFBF5', letterSpacing: '-0.02em' }}>SkyWay Airlines</span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginLeft: '0.35rem', border: '0.5px solid rgba(255,255,255,0.12)', padding: '2px 7px', borderRadius: 999 }}>Maison Edition</span>
           </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Your trusted partner for domestic and international flights.
-          </p>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            © 2026 SkyWay Airlines. All rights reserved.
-          </p>
+          <p style={{ color: 'rgba(255,255,255,0.54)', fontSize: '0.86rem', marginBottom: '0.35rem' }}>Your trusted partner for domestic and international flights.</p>
+          <p style={{ color: 'rgba(255,255,255,0.30)', fontSize: '0.76rem' }}>© 2026 SkyWay Airlines. All rights reserved. · Quiet luxury aviation.</p>
         </div>
       </footer>
     </motion.div>

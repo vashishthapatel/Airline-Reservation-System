@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getCurrentUser, getGoogleAuthConfig, register as registerApi } from '../api/axios'
-import { User, Mail, Phone, Lock, UserPlus } from 'lucide-react'
+import { User, Mail, Phone, Lock, UserPlus, Plane } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 function GoogleIcon({ size = 18 }) {
@@ -29,9 +29,7 @@ export default function Register() {
   const [googleEnabled, setGoogleEnabled] = useState(false)
 
   useEffect(() => {
-    getGoogleAuthConfig()
-      .then(res => setGoogleEnabled(res.data?.data === true))
-      .catch(() => setGoogleEnabled(false))
+    getGoogleAuthConfig().then(res => setGoogleEnabled(res.data?.data === true)).catch(() => setGoogleEnabled(false))
   }, [])
 
   useEffect(() => {
@@ -39,55 +37,26 @@ export default function Register() {
     const googleReason = searchParams.get('reason')
     const token = searchParams.get('token')
     if (!googleStatus) return
-
     if (googleStatus === 'error') {
       toast.error(googleReason === 'unsupported-user'
         ? 'This Google account is not allowed for this OAuth app. Add it as a test user in Google Cloud Console or publish the app for external users.'
-        : googleReason === 'oauth-disabled'
-          ? 'Google sign-up is not enabled for this app.'
-          : 'Google sign-up failed or was cancelled.')
-      setSearchParams({})
-      return
+        : googleReason === 'oauth-disabled' ? 'Google sign-up is not enabled for this app.' : 'Google sign-up failed or was cancelled.')
+      setSearchParams({}); return
     }
-
-    if (googleStatus === 'missing-email') {
-      toast.error('Google account did not provide an email address.')
-      setSearchParams({})
-      return
-    }
-
-    if (googleStatus === 'unverified-email') {
-      toast.error('Your Google email address is not verified.')
-      setSearchParams({})
-      return
-    }
-
-    if (googleStatus !== 'success' || !token) {
-      toast.error('Google sign-up could not be completed.')
-      setSearchParams({})
-      return
-    }
-
+    if (googleStatus === 'missing-email') { toast.error('Google account did not provide an email address.'); setSearchParams({}); return }
+    if (googleStatus === 'unverified-email') { toast.error('Your Google email address is not verified.'); setSearchParams({}); return }
+    if (googleStatus !== 'success' || !token) { toast.error('Google sign-up could not be completed.'); setSearchParams({}); return }
     async function completeGoogleSignUp() {
       setSubmitting(true)
       localStorage.setItem('airline_token', token)
       try {
         const res = await getCurrentUser()
-        if (res.data?.success) {
-          login({ ...res.data.data, token })
-          toast.success('Signed up with Google!')
-          navigate('/', { replace: true })
-        }
+        if (res.data?.success) { login({ ...res.data.data, token }); toast.success('Signed up with Google!'); navigate('/', { replace: true }) }
       } catch (err) {
         localStorage.removeItem('airline_token')
-        const errorMsg = err.response?.data?.message || err.message || 'Unknown error'
-        toast.error(`Google sign-up could not be completed. Error: ${errorMsg}`)
-      } finally {
-        setSubmitting(false)
-        setSearchParams({})
-      }
+        toast.error(`Google sign-up could not be completed. Error: ${err.response?.data?.message || err.message || 'Unknown error'}`)
+      } finally { setSubmitting(false); setSearchParams({}) }
     }
-
     completeGoogleSignUp()
   }, [login, navigate, searchParams, setSearchParams])
 
@@ -103,180 +72,93 @@ export default function Register() {
     const trimmedName = name.trim()
     const normalizedEmail = email.trim().toLowerCase()
     const trimmedPhone = phone.trim()
-
-    if (!trimmedName || !normalizedEmail || !trimmedPhone || !password || !confirmPassword) {
-      toast.error('All fields are required!')
-      return
-    }
-
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters long!')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match!')
-      return
-    }
-
+    if (!trimmedName || !normalizedEmail || !trimmedPhone || !password || !confirmPassword) { toast.error('All fields are required!'); return }
+    if (password.length < 6) { toast.error('Password must be at least 6 characters long!'); return }
+    if (password !== confirmPassword) { toast.error('Passwords do not match!'); return }
     setSubmitting(true)
     try {
-      const res = await registerApi({
-        name: trimmedName,
-        email: normalizedEmail,
-        phone: trimmedPhone,
-        password
-      })
-
-      if (res.data && res.data.success) {
-        toast.success('Registration successful!')
-        login(res.data.data) // Auto logins user and saves context & localStorage
-        navigate('/')
-      } else {
-        toast.error(res.data.message || 'Registration failed')
-      }
-    } catch (err) {
-      console.error(err)
-      toast.error(err.response?.data?.message || 'Email already registered or registration failed')
-    } finally {
-      setSubmitting(false)
-    }
+      const res = await registerApi({ name: trimmedName, email: normalizedEmail, phone: trimmedPhone, password })
+      if (res.data && res.data.success) { toast.success('Registration successful!'); login(res.data.data); navigate('/') }
+      else toast.error(res.data.message || 'Registration failed')
+    } catch (err) { toast.error(err.response?.data?.message || 'Email already registered or registration failed') }
+    finally { setSubmitting(false) }
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '80vh', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }} className="animate-fadeInUp">
-      <div className="glass-card" style={{ width: '100%', maxWidth: '480px', padding: '2.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 className="gradient-text" style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>Create Account</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Join SkyWay to search flights, reserve seats, and earn travel rewards</p>
+    <div style={{ display: 'flex', minHeight: 'calc(100vh - 73px)', alignItems: 'center', justifyContent: 'center', padding: '2.4rem 1rem', background: 'var(--paper)' }} className="animate-fadeInUp">
+      <div className="glass-card" style={{ width: '100%', maxWidth: 480, padding: '2rem 1.7rem 1.6rem', borderRadius: 20 }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.4rem' }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 12, margin: '0 auto 0.9rem',
+            background: 'rgba(201,168,106,0.11)', border: '0.5px solid rgba(201,168,106,0.18)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A68A56'
+          }}>
+            <Plane size={20} />
+          </div>
+          <div className="eyebrow" style={{ justifyContent: 'center', marginBottom: '0.4rem' }}>Join SkyWay</div>
+          <h2 style={{ fontFamily: 'Instrument Serif, Georgia, serif', fontWeight: 400, fontSize: '1.9rem', letterSpacing: '-0.02em', color: 'var(--ink)', lineHeight: 1 }}>
+            Create your <em className="serif-italic" style={{ color: '#A68A56' }}>account</em>
+          </h2>
+          <p style={{ color: 'var(--slate)', fontSize: '0.88rem', marginTop: '0.5rem', lineHeight: 1.6 }}>Search flights, reserve seats, and earn Privilege miles — in one paper-light flow.</p>
+          <div style={{ height: 1, width: 56, background: '#C9A86A', opacity: 0.9, margin: '0.9rem auto 0', borderRadius: 99 }} />
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="form-group">
-            <label className="form-label" htmlFor="name-input"><User size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Full Name</label>
-            <input
-              id="name-input"
-              type="text"
-              className="input-field"
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={submitting}
-              autoComplete="name"
-              required
-            />
+            <label className="form-label" htmlFor="name-input"><User size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Full Name</label>
+            <input id="name-input" type="text" className="input-field" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} disabled={submitting} autoComplete="name" required />
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="email-input"><Mail size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Email Address</label>
-            <input
-              id="email-input"
-              type="email"
-              className="input-field"
-              placeholder="john@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={submitting}
-              autoComplete="email"
-              required
-            />
+            <label className="form-label" htmlFor="email-input"><Mail size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Email Address</label>
+            <input id="email-input" type="email" className="input-field" placeholder="john@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={submitting} autoComplete="email" required />
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="phone-input"><Phone size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Phone Number</label>
-            <input
-              id="phone-input"
-              type="tel"
-              className="input-field"
-              placeholder="9876543210"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              disabled={submitting}
-              autoComplete="tel"
-              required
-            />
+            <label className="form-label" htmlFor="phone-input"><Phone size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Phone Number</label>
+            <input id="phone-input" type="tel" className="input-field" placeholder="9876543210" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={submitting} autoComplete="tel" required />
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="password-input"><Lock size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Password</label>
-            <input
-              id="password-input"
-              type="password"
-              className="input-field"
-              placeholder="•••••••• (Min 6 chars)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={submitting}
-              autoComplete="new-password"
-              required
-            />
+            <label className="form-label" htmlFor="password-input"><Lock size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Password</label>
+            <input id="password-input" type="password" className="input-field" placeholder="•••••••• (Min 6 chars)" value={password} onChange={(e) => setPassword(e.target.value)} disabled={submitting} autoComplete="new-password" required />
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="confirm-password-input"><Lock size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Confirm Password</label>
-            <input
-              id="confirm-password-input"
-              type="password"
-              className="input-field"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={submitting}
-              autoComplete="new-password"
-              required
-            />
+            <label className="form-label" htmlFor="confirm-password-input"><Lock size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Confirm Password</label>
+            <input id="confirm-password-input" type="password" className="input-field" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} disabled={submitting} autoComplete="new-password" required />
           </div>
 
-          <button
-            type="submit"
-            className="btn-primary"
-            style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}
-            disabled={submitting}
-          >
-            <UserPlus size={16} /> {submitting ? 'Signing up...' : 'Sign Up'}
+          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '0.25rem' }} disabled={submitting}>
+            <UserPlus size={15} /> {submitting ? 'Signing up…' : 'Sign Up'}
           </button>
 
           {googleEnabled && (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }} />
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>or</span>
-                <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.15rem 0' }}>
+                <div style={{ flex: 1, height: 1, background: '#E8E0D0' }} />
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.68rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9AA0AE' }}>or</span>
+                <div style={{ flex: 1, height: 1, background: '#E8E0D0' }} />
               </div>
               <button
-                type="button"
-                onClick={signInWithGoogle}
-                disabled={submitting}
+                type="button" onClick={signInWithGoogle} disabled={submitting}
                 style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.6rem',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '10px',
-                  border: '1px solid #dadce0',
-                  background: '#fff',
-                  color: '#3c4043',
-                  fontWeight: 500,
-                  fontSize: '0.9rem',
-                  cursor: submitting ? 'not-allowed' : 'pointer',
-                  opacity: submitting ? 0.6 : 1,
-                  transition: 'background 0.15s, box-shadow 0.15s',
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
+                  padding: '0.78rem 1rem', borderRadius: 999, border: '0.5px solid #E8E0D0',
+                  background: '#FFFFFF', color: '#1A1E26', fontWeight: 600, fontSize: '0.9rem',
+                  cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1,
+                  boxShadow: '0 1px 1px rgba(26,30,38,0.04)'
                 }}
               >
-                <GoogleIcon size={19} />
-                Continue with Google
+                <GoogleIcon size={18} /> Continue with Google
               </button>
             </>
           )}
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.86rem', color: 'var(--slate)' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: 'var(--primary-light)', fontWeight: 600 }}>
-            Sign In
-          </Link>
+          <Link to="/login" style={{ color: '#A68A56', fontWeight: 750, textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(201,168,106,0.35)' }}>Sign In</Link>
         </div>
       </div>
     </div>
