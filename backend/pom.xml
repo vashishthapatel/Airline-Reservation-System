@@ -57,7 +57,14 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Embedded database for local/demo runs -->
+        <!-- PostgreSQL — persistent storage on Render / Cloudflare (free tier H2 file is ephemeral and wiped on sleep) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Embedded database for local/demo runs (used only when DATABASE_URL is not set) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

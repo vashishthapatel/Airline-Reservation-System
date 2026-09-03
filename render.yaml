@@ -21,7 +21,7 @@ services:
           name: airline-db
           property: password
       - key: DATABASE_DRIVER
-        value: org.h2.Driver
+        value: org.postgresql.Driver
       - key: JPA_DDL_AUTO
         value: update
       - key: SPRING_PROFILES_ACTIVE
