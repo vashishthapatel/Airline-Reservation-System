@@ -123,14 +123,12 @@ export default function Login() {
     signIn(email, password)
   }
 
-  const signInWithDemo = (role) => {
-    const demo = role === 'admin'
-      ? { email: 'admin@airline.com', password: 'admin123' }
-      : { email: 'john@example.com', password: 'customer123' }
-
-    setEmail(demo.email)
-    setPassword(demo.password)
-    signIn(demo.email, demo.password)
+  const signInWithDemo = () => {
+    const demoEmail = 'admin@airline.com'
+    const demoPassword = 'admin123'
+    setEmail(demoEmail)
+    setPassword(demoPassword)
+    signIn(demoEmail, demoPassword)
   }
 
   const signInWithGoogle = () => {
@@ -149,14 +147,9 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-            <button type="button" className="btn-ghost btn-sm" onClick={() => signInWithDemo('customer')} disabled={submitting}>
-              Customer Demo
-            </button>
-            <button type="button" className="btn-ghost btn-sm" onClick={() => signInWithDemo('admin')} disabled={submitting}>
-              Admin Demo
-            </button>
-          </div>
+          <button type="button" className="btn-ghost btn-sm" onClick={signInWithDemo} disabled={submitting}>
+            Admin Demo
+          </button>
 
           <div className="form-group">
             <label className="form-label" htmlFor="email-input"><Mail size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Email Address</label>
