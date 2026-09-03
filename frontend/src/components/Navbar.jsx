@@ -34,7 +34,7 @@ export default function Navbar() {
             <>
               <li><Link to="/" className={isActive('/')} onClick={closeMenu}>Home</Link></li>
               <li><Link to="/login" className="btn-ghost btn-sm" onClick={closeMenu}>Login</Link></li>
-              <li><Link to="/register" className="btn-primary btn-sm" onClick={closeMenu}>Register</Link></li>
+              <li><Link to="/register" className="btn-primary btn-sm" onClick={closeMenu}>Sign Up</Link></li>
             </>
           )}
 
