@@ -134,6 +134,19 @@ export default function Landing() {
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
       {/* ── HERO — MAISON ── */}
       <header className="hero-section">
+        {/* 4K hero — paper-pressed watermark (8% opacity, veil fade). Swap URL to swap vibe. */}
+        <div className="hero-photo" aria-hidden="true">
+          <img
+            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=3840&q=80&auto=format&fit=crop"
+            srcSet="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80&auto=format&fit=crop 1920w, https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=2560&q=80&auto=format&fit=crop 2560w, https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=3840&q=80&auto=format&fit=crop 3840w"
+            sizes="100vw"
+            alt=""
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+          />
+          <div className="hero-photo-veil" aria-hidden="true" />
+        </div>
         <div className="hero-bg-orbs" aria-hidden="true" />
 
         <div className="hero-content">
