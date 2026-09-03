@@ -33,33 +33,12 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
       - key: BACKEND_URL
-        value: https://airline-reservation-system-1-zef7.onrender.com
+        value: https://airline-reservation-system-2t4j.onrender.com
       - key: GOOGLE_REDIRECT_URI
-        value: https://airline-reservation-system-1-zef7.onrender.com/login/oauth2/code/google
+        value: https://airline-reservation-system-2t4j.onrender.com/login/oauth2/code/google
       - key: FRONTEND_URL
-        fromService:
-          type: web
-          name: airline-frontend
-          envVarKey: RENDER_EXTERNAL_URL
+        sync: false
 
-  - type: web
-    name: airline-frontend
-    runtime: static
-    branch: main
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: airline-backend
-          envVarKey: RENDER_EXTERNAL_URL
-        prependPath: /api
 
 databases:
   - name: airline-db
