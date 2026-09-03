@@ -134,7 +134,7 @@ export default function Landing() {
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
       {/* ── HERO — MAISON ── */}
       <header className="hero-section">
-        {/* 4K hero — paper-pressed watermark (8% opacity, veil fade). Swap URL to swap vibe. */}
+        {/* 4K hero — fully visible (dark veil for text readability) */}
         <div className="hero-photo" aria-hidden="true">
           <img
             src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=3840&q=80&auto=format&fit=crop"

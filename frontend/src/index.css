@@ -338,7 +338,7 @@ select.input-field option{background:var(--surface); color:var(--ink)}
 .hamburger span{display:block;width:20px;height:1.5px;background:var(--ink);border-radius:99px;transition:var(--transition)}
 .hamburger:hover{background:var(--stone)}
 
-/* ——— Hero — MAISON ——— */
+/* ——— Hero — MAISON — with 4K photo visible ——— */
 .hero-section{
   min-height:100vh; min-height:100svh;
   display:flex; align-items:center;
@@ -347,33 +347,41 @@ select.input-field option{background:var(--surface); color:var(--ink)}
   background:var(--paper);
   border-bottom:0.5px solid var(--hairline);
 }
-.hero-bg-orbs{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; opacity:1}
-.hero-bg-orbs::before{
-  content:'';
-  position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse 820px 520px at 18% 18%, rgba(201,168,106,0.08), transparent 62%),
-    radial-gradient(ellipse 760px 560px at 92% 10%, rgba(27,42,74,0.04), transparent 58%),
-    radial-gradient(ellipse 900px 600px at 50% 92%, rgba(201,168,106,0.05), transparent 70%);
-}
-/* 4K hero photo — paper watermark. Ultra-light so MAISON stays paper-first */
+.hero-bg-orbs{display:none!important}
 .hero-photo{position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden}
 .hero-photo img{
   width:100%; height:100%; object-fit:cover; object-position:center 38%;
-  opacity:0.08; filter:saturate(0.85) contrast(1.02);
-  -webkit-mask-image:
-    linear-gradient(to bottom, black 62%, transparent 100%),
-    radial-gradient(124% 92% at 50% 30%, black 58%, transparent 82%);
-          mask-image:
-    linear-gradient(to bottom, black 62%, transparent 100%),
-    radial-gradient(124% 92% at 50% 30%, black 58%, transparent 82%);
-  -webkit-mask-composite:source-in; mask-composite:intersect;
+  opacity:1; filter:saturate(1.08) contrast(1.06) brightness(1.02);
 }
 .hero-photo-veil{
   position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(255,251,245,0) 0%, rgba(255,251,245,0.52) 70%, #FFFBF5 100%);
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.18) 38%, rgba(0,0,0,0.06) 62%, rgba(255,251,245,0.55) 88%, #FFFBF5 100%),
+    linear-gradient(90deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.12) 42%, transparent 62%);
 }
 .hero-section .hero-content{position:relative; z-index:1}
+.hero-section .hero-content .hero-text,
+.hero-section .hero-content .hero-text h1,
+.hero-section .hero-content .hero-text p{
+  color:#FFFFFF;
+  text-shadow:0 2px 18px rgba(0,0,0,0.32), 0 1px 3px rgba(0,0,0,0.45);
+}
+.hero-section .hero-content .hero-text .eyebrow{color:rgba(255,255,255,0.92); text-shadow:0 1px 8px rgba(0,0,0,0.4)}
+.hero-section .hero-content .hero-text .hero-title .accent{color:#F0D9A8; -webkit-text-fill-color:#F0D9A8}
+.hero-section .hero-content .hero-badge{
+  background:rgba(255,255,255,0.92); border-color:rgba(255,255,255,0.6); color:#1A1E26;
+  text-shadow:none; box-shadow:0 4px 18px rgba(0,0,0,0.12);
+}
+.hero-section .hero-content .hero-stats{color:#FFFFFF; text-shadow:0 1px 8px rgba(0,0,0,0.35)}
+.hero-section .hero-content .hero-stats .stats-label{color:rgba(255,255,255,0.88)}
+@media (max-width:768px){
+  .hero-photo img{object-position:center 32%;}
+  .hero-photo-veil{
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.14) 42%, rgba(0,0,0,0.04) 62%, rgba(255,251,245,0.55) 88%, #FFFBF5 100%),
+      linear-gradient(90deg, rgba(0,0,0,0.22) 0%, transparent 58%);
+  }
+}
 .orb{position:absolute; border-radius:50%; filter:blur(42px); opacity:0.0}
 .orb-1,.orb-2,.orb-3{display:none}
 .hero-content{position:relative; z-index:1; max-width:1220px; margin:0 auto; padding:3.2rem 1.5rem 3.8rem; width:100%}
