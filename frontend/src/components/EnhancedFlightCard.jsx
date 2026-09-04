@@ -102,6 +102,7 @@ export default function EnhancedFlightCard({ flight, onSelect }) {
             style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'center', padding: '0.85rem 1.25rem' }}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
+            aria-label={`Select flight ${flight.flightNumber} from ${flight.originCity} to ${flight.destinationCity}`}
           >
             Select <ArrowRight size={16} />
           </motion.button>
