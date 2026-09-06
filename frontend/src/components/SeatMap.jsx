@@ -16,6 +16,17 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
     return 'seat-btn seat-available'
   }
 
+  const getSeatAriaLabel = (seat) => {
+    const status = (seat.status === 'BOOKED' || seat.status === 'LOCKED')
+      ? 'unavailable'
+      : isSelected(seat.id)
+      ? 'selected'
+      : 'available'
+    const className = seat.seatClass ? `${seat.seatClass.toLowerCase()} class` : ''
+    const priceStr = `₹${Number(seat.price).toLocaleString('en-IN')}`
+    return `Seat ${seat.seatNumber}, ${className}, ${priceStr}, ${status}`
+  }
+
   const renderSeats = (seatList, cols) => {
     const rows = {}
     seatList.forEach(seat => {
@@ -32,6 +43,8 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
             className={getSeatClass(seat)}
             onClick={() => handleClick(seat)}
             title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
+            aria-label={getSeatAriaLabel(seat)}
+            aria-pressed={isSelected(seat.id)}
             disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
           >
             {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
@@ -42,9 +55,9 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
   }
 
   return (
-    <div className="seat-map-container">
+    <div className="seat-map-container" role="region" aria-label="Seat Map">
       {/* Aircraft nose */}
-      <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '2rem' }}>✈️</div>
+      <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '2rem' }} aria-hidden="true">✈️</div>
 
       {firstClass.length > 0 && (
         <div className="seat-class-section">
