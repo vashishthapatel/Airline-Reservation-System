@@ -26,17 +26,29 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
 
     return Object.entries(rows).map(([row, rowSeats]) => (
       <div key={row} style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '0.5rem', marginBottom: '0.5rem' }}>
-        {rowSeats.map(seat => (
-          <button
-            key={seat.id}
-            className={getSeatClass(seat)}
-            onClick={() => handleClick(seat)}
-            title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
-            disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
-          >
-            {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
-          </button>
-        ))}
+        {rowSeats.map(seat => {
+          const selected = isSelected(seat.id)
+          const isUnavailable = seat.status === 'BOOKED' || seat.status === 'LOCKED'
+          const isLoading = lockingSeatId === seat.id
+          const statusText = seat.status === 'BOOKED' ? 'Booked' : seat.status === 'LOCKED' ? 'Locked' : selected ? 'Selected' : 'Available'
+          const classLabel = seat.seatClass.toLowerCase()
+          const priceFormatted = Number(seat.price).toLocaleString('en-IN')
+          const seatLabel = `Seat ${seat.seatNumber}, ${classLabel} class, ₹${priceFormatted}, ${statusText}`
+
+          return (
+            <button
+              key={seat.id}
+              className={getSeatClass(seat)}
+              onClick={() => handleClick(seat)}
+              title={`${seat.seatNumber} - ₹${priceFormatted} (${statusText})`}
+              disabled={isUnavailable || isLoading}
+              aria-label={seatLabel}
+              aria-pressed={selected}
+            >
+              {isLoading ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
+            </button>
+          )
+        })}
       </div>
     ))
   }
@@ -44,7 +56,7 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
   return (
     <div className="seat-map-container">
       {/* Aircraft nose */}
-      <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '2rem' }}>✈️</div>
+      <div aria-hidden="true" style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '2rem' }}>✈️</div>
 
       {firstClass.length > 0 && (
         <div className="seat-class-section">
