@@ -1,0 +1,3 @@
+## 2025-05-10 - Accessible Interactive Seat Map Grids
+**Learning:** Dense visual interactive grids (such as airplane seat maps) often omit key context (class, price, status) for screen readers when buttons display only minimal text (e.g. seat numbers or row codes). Adding concise `aria-label`s combining seat number, class, price, and status alongside `aria-pressed` makes seat selection fully understandable for screen reader users without altering the visually minimalist UI layout.
+**Action:** Always complement condensed visual grid buttons (like seat pickers, calendar dates, matrix tables) with explicit `aria-label` strings that convey all essential metadata.
