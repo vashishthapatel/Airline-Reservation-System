@@ -16,6 +16,19 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
     return 'seat-btn seat-available'
   }
 
+  const getSeatAriaLabel = (seat) => {
+    const selected = isSelected(seat.id)
+    const isBooked = seat.status === 'BOOKED' || seat.status === 'LOCKED'
+    const formattedPrice = `₹${Number(seat.price).toLocaleString('en-IN')}`
+    const className = seat.seatClass ? seat.seatClass.toLowerCase() : ''
+
+    let statusText = 'available'
+    if (selected) statusText = 'selected'
+    if (isBooked) statusText = 'booked'
+
+    return `Seat ${seat.seatNumber}, ${className} class, ${formattedPrice}, ${statusText}`
+  }
+
   const renderSeats = (seatList, cols) => {
     const rows = {}
     seatList.forEach(seat => {
@@ -26,17 +39,23 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
 
     return Object.entries(rows).map(([row, rowSeats]) => (
       <div key={row} style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '0.5rem', marginBottom: '0.5rem' }}>
-        {rowSeats.map(seat => (
-          <button
-            key={seat.id}
-            className={getSeatClass(seat)}
-            onClick={() => handleClick(seat)}
-            title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
-            disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
-          >
-            {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
-          </button>
-        ))}
+        {rowSeats.map(seat => {
+          const selected = isSelected(seat.id)
+          const isDisabled = seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id
+          return (
+            <button
+              key={seat.id}
+              className={getSeatClass(seat)}
+              onClick={() => handleClick(seat)}
+              title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
+              aria-label={getSeatAriaLabel(seat)}
+              aria-pressed={selected}
+              disabled={isDisabled}
+            >
+              {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
+            </button>
+          )
+        })}
       </div>
     ))
   }
