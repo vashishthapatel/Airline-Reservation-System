@@ -16,6 +16,22 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
     return 'seat-btn seat-available'
   }
 
+  const getSeatAriaLabel = (seat) => {
+    const classNameMap = {
+      FIRST: 'First Class',
+      BUSINESS: 'Business Class',
+      ECONOMY: 'Economy Class'
+    }
+    const classNameStr = classNameMap[seat.seatClass] || seat.seatClass
+    const priceStr = `₹${Number(seat.price).toLocaleString('en-IN')}`
+    const statusStr = (seat.status === 'BOOKED' || seat.status === 'LOCKED')
+      ? 'Booked'
+      : isSelected(seat.id)
+      ? 'Selected'
+      : 'Available'
+    return `Seat ${seat.seatNumber}, ${classNameStr}, ${priceStr}, ${statusStr}`
+  }
+
   const renderSeats = (seatList, cols) => {
     const rows = {}
     seatList.forEach(seat => {
@@ -32,6 +48,8 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
             className={getSeatClass(seat)}
             onClick={() => handleClick(seat)}
             title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
+            aria-label={getSeatAriaLabel(seat)}
+            aria-pressed={isSelected(seat.id)}
             disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
           >
             {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
