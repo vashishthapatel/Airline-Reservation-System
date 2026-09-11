@@ -16,6 +16,13 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
     return 'seat-btn seat-available'
   }
 
+  const getSeatAriaLabel = (seat) => {
+    const classNames = { FIRST: 'First Class', BUSINESS: 'Business Class', ECONOMY: 'Economy Class' }
+    const statusText = seat.status === 'BOOKED' || seat.status === 'LOCKED' ? 'Booked' : isSelected(seat.id) ? 'Selected' : 'Available'
+    const classNameText = classNames[seat.seatClass] || seat.seatClass
+    return `Seat ${seat.seatNumber}, ${classNameText}, ₹${Number(seat.price).toLocaleString('en-IN')}, ${statusText}`
+  }
+
   const renderSeats = (seatList, cols) => {
     const rows = {}
     seatList.forEach(seat => {
@@ -25,13 +32,15 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
     })
 
     return Object.entries(rows).map(([row, rowSeats]) => (
-      <div key={row} style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '0.5rem', marginBottom: '0.5rem' }}>
+      <div key={row} role="row" style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '0.5rem', marginBottom: '0.5rem' }}>
         {rowSeats.map(seat => (
           <button
             key={seat.id}
             className={getSeatClass(seat)}
             onClick={() => handleClick(seat)}
             title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
+            aria-label={getSeatAriaLabel(seat)}
+            aria-pressed={isSelected(seat.id)}
             disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
           >
             {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
