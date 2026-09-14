@@ -16,6 +16,13 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
     return 'seat-btn seat-available'
   }
 
+  const getSeatAriaLabel = (seat) => {
+    const className = seat.seatClass ? seat.seatClass.charAt(0) + seat.seatClass.slice(1).toLowerCase() + ' Class' : ''
+    const status = seat.status === 'BOOKED' || seat.status === 'LOCKED' ? 'Booked' : isSelected(seat.id) ? 'Selected' : 'Available'
+    const priceStr = seat.price ? `, ₹${Number(seat.price).toLocaleString('en-IN')}` : ''
+    return `Seat ${seat.seatNumber}, ${className}, ${status}${status === 'Available' ? priceStr : ''}`
+  }
+
   const renderSeats = (seatList, cols) => {
     const rows = {}
     seatList.forEach(seat => {
@@ -26,28 +33,34 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
 
     return Object.entries(rows).map(([row, rowSeats]) => (
       <div key={row} style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '0.5rem', marginBottom: '0.5rem' }}>
-        {rowSeats.map(seat => (
-          <button
-            key={seat.id}
-            className={getSeatClass(seat)}
-            onClick={() => handleClick(seat)}
-            title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
-            disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
-          >
-            {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
-          </button>
-        ))}
+        {rowSeats.map(seat => {
+          const isUnavailable = seat.status === 'BOOKED' || seat.status === 'LOCKED'
+          const selected = isSelected(seat.id)
+          return (
+            <button
+              key={seat.id}
+              className={getSeatClass(seat)}
+              onClick={() => handleClick(seat)}
+              title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
+              aria-label={getSeatAriaLabel(seat)}
+              aria-pressed={!isUnavailable ? selected : undefined}
+              disabled={isUnavailable || lockingSeatId === seat.id}
+            >
+              {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
+            </button>
+          )
+        })}
       </div>
     ))
   }
 
   return (
-    <div className="seat-map-container">
+    <div className="seat-map-container" role="region" aria-label="Seat Selection Map">
       {/* Aircraft nose */}
-      <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '2rem' }}>✈️</div>
+      <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '2rem' }} aria-hidden="true">✈️</div>
 
       {firstClass.length > 0 && (
-        <div className="seat-class-section">
+        <div className="seat-class-section" role="group" aria-label="First Class Seats">
           <div className="seat-class-title">
             <span>👑 First Class</span>
           </div>
@@ -56,7 +69,7 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
       )}
 
       {business.length > 0 && (
-        <div className="seat-class-section">
+        <div className="seat-class-section" role="group" aria-label="Business Class Seats">
           <div className="seat-class-title">
             <span>💼 Business Class</span>
           </div>
@@ -65,7 +78,7 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
       )}
 
       {economy.length > 0 && (
-        <div className="seat-class-section">
+        <div className="seat-class-section" role="group" aria-label="Economy Class Seats">
           <div className="seat-class-title">
             <span>🪑 Economy Class</span>
           </div>
