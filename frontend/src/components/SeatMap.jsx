@@ -10,6 +10,18 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
     onSeatClick(seat)
   }
 
+  const formatSeatClass = (seatClass) => {
+    if (seatClass === 'FIRST') return 'First Class'
+    if (seatClass === 'BUSINESS') return 'Business Class'
+    return 'Economy Class'
+  }
+
+  const getSeatStatusText = (seat) => {
+    if (seat.status === 'BOOKED' || seat.status === 'LOCKED') return 'Booked'
+    if (isSelected(seat.id)) return 'Selected'
+    return 'Available'
+  }
+
   const getSeatClass = (seat) => {
     if (seat.status === 'BOOKED' || seat.status === 'LOCKED') return 'seat-btn seat-booked'
     if (isSelected(seat.id)) return 'seat-btn seat-selected'
@@ -26,23 +38,33 @@ export default function SeatMap({ seats, selectedSeats, onSeatClick, maxSelectio
 
     return Object.entries(rows).map(([row, rowSeats]) => (
       <div key={row} style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '0.5rem', marginBottom: '0.5rem' }}>
-        {rowSeats.map(seat => (
-          <button
-            key={seat.id}
-            className={getSeatClass(seat)}
-            onClick={() => handleClick(seat)}
-            title={`${seat.seatNumber} - ₹${Number(seat.price).toLocaleString('en-IN')}`}
-            disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
-          >
-            {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
-          </button>
-        ))}
+        {rowSeats.map(seat => {
+          const priceFormatted = `₹${Number(seat.price).toLocaleString('en-IN')}`
+          const statusText = getSeatStatusText(seat)
+          const seatClassName = formatSeatClass(seat.seatClass)
+          const ariaLabel = `Seat ${seat.seatNumber}, ${seatClassName}, ${priceFormatted}, ${statusText}`
+          const selected = isSelected(seat.id)
+
+          return (
+            <button
+              key={seat.id}
+              className={getSeatClass(seat)}
+              onClick={() => handleClick(seat)}
+              title={`Seat ${seat.seatNumber} (${seatClassName}) - ${priceFormatted} [${statusText}]`}
+              aria-label={ariaLabel}
+              aria-pressed={selected}
+              disabled={seat.status === 'BOOKED' || seat.status === 'LOCKED' || lockingSeatId === seat.id}
+            >
+              {lockingSeatId === seat.id ? '...' : seat.seatNumber.replace(/^[FBE]\d+/, '')}
+            </button>
+          )
+        })}
       </div>
     ))
   }
 
   return (
-    <div className="seat-map-container">
+    <div className="seat-map-container" role="region" aria-label="Interactive Seat Map">
       {/* Aircraft nose */}
       <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '2rem' }}>✈️</div>
 
