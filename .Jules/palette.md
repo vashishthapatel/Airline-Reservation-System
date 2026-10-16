@@ -1,0 +1,3 @@
+## 2025-09-03 - [SeatMap Accessibility Pattern]
+**Learning:** In interactive seat layout maps, simple seat numbers like "1A" on grid buttons lack crucial context for screen readers (class, price, status). Adding `aria-label` with full details (e.g. `Seat 1A, First Class, ₹5,000, Available`) and `aria-pressed` state allows assistive technology users to navigate complex interactive grid maps seamlessly.
+**Action:** When building custom interactive grid components (like seat maps or theater seating), ensure each button provides an informative `aria-label` combining name, class, price, and status, along with `aria-pressed` state.
